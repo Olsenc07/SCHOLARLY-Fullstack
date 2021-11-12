@@ -79,16 +79,18 @@ export class PostPageComponent implements OnInit {
   // allFriends should filter through your friend list desktop
   allFriends: string[] = [''];
 
-
+  selectedIndexPost = 0;
   isLinear = false;
   Title: FormControl = new FormControl('');
   public TitleLength = new BehaviorSubject(0);
   upload: FormControl = new FormControl('');
+  postLocationMain: FormControl = new FormControl('');
   postLocation: FormControl = new FormControl('');
   postDescription: FormControl = new FormControl('');
   search: FormControl = new FormControl('');
   value: FormControl = new FormControl('');
   date: FormControl = new FormControl('');
+
 
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
@@ -96,17 +98,13 @@ export class PostPageComponent implements OnInit {
   fourthFormGroup: FormGroup;
 
 
-
-
   postForm = new FormGroup({
     // Desktop
     Title: this.Title,
-    PostDescription: this.postDescription,
+    postDescription: this.postDescription,
     upload: this.upload,
     postLocation: this.postLocation,
     friendCtrl: this.friendCtrl,
-
-
   });
 
 
@@ -147,6 +145,10 @@ export class PostPageComponent implements OnInit {
     document.getElementById('fileInput').click();
   }
   openDialog(): void {
+    this.dialog.open(DialogElementsComponent);
+  }
+  // Create new page for services popup
+  openDialogServices(): void {
     this.dialog.open(DialogElementsComponent);
   }
 
@@ -251,10 +253,10 @@ export class PostPageComponent implements OnInit {
 
 
   changeTab(): void {
-    this.selectedIndex = this.selectedIndex === 1 ? 0 : 1;
+    this.selectedIndexPost = this.selectedIndexPost === 1 ? 0 : 1;
   }
   changeTab1(): void {
-    this.selectedIndex = this.selectedIndex === 0 ? 1 : 0;
+    this.selectedIndexPost = this.selectedIndexPost === 0 ? 1 : 0;
   }
 }
 @Component({

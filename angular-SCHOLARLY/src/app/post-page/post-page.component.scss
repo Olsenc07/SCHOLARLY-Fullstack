@@ -1,24 +1,10 @@
-@media (min-width: 1024px) {
-  .largest-page {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    flex-direction: row;
-    box-sizing: border-box;
-    position: fixed;
-  }
-}
-@media (max-width: 1024px) {
-  .largest-page {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    flex-direction: column;
-    box-sizing: border-box;
-    overflow-y: scroll;
-  }
+.largest-page {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 
 .amount-peopleD {
@@ -75,6 +61,23 @@
   margin-left: 2%;
   margin-right: 2%;
 }
+.back_btn {
+  font-family: "Font Awesome 5 Free";
+  display: flex;
+  align-content: center;
+  width: 50%;
+  justify-content: center;
+  height: 100%;
+}
+.post_btn_top_right {
+  font-family: "Font Awesome 5 Free";
+  display: flex;
+  align-content: center;
+  width: 50%;
+  justify-content: center;
+  height: 100%;
+  background-color: #11173a;
+}
 .btn {
   display: flex;
   height: 100%;
@@ -97,11 +100,23 @@
 .center {
   display: flex;
   justify-content: center;
+  margin-bottom: 5%;
 }
 .centerD {
   display: flex;
   justify-content: center;
   margin-top: 3%;
+  margin-bottom: 1%;
+  flex-direction: row;
+  align-items: center;
+  font-size: x-large;
+  color: #3a3232;
+  font-family: "Font Awesome 5 Free";
+}
+.centerL {
+  display: flex;
+  justify-content: center;
+  margin-top: 7%;
   margin-bottom: 1%;
   flex-direction: row;
   font-size: x-large;
@@ -112,7 +127,6 @@
   .contents {
     display: flex;
     box-sizing: border-box;
-    padding: 0% 0% 35% 0%;
   }
 }
 @media (max-width: 1024px) and(min-width:700px) {
@@ -129,7 +143,7 @@
     padding: 0% 20% 0% 20%;
   }
 }
-.column {
+.column_text_counter {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -165,28 +179,17 @@
   flex-direction: column;
   justify-content: center;
 }
-@media (min-width: 1024px) {
-  .counter {
-    display: flex;
-    margin-top: 8%;
-  }
+
+.counter {
+  display: flex;
+  margin-top: 8%;
 }
-@media (max-width: 1024px) and (min-width: 420px) {
-  .counter {
-    display: flex;
-    margin-top: 3%;
-    margin-right: 3%;
-  }
-}
-@media (max-width: 420px) {
-  .counter {
-    display: flex;
-    margin-top: 5%;
-    margin-right: 5%;
-  }
-}
+
 .description-input {
   width: 75%;
+}
+.display {
+  display: flex;
 }
 .entire-page {
   display: flex;
@@ -195,9 +198,13 @@
   flex-direction: row;
   box-sizing: border-box;
   justify-content: center;
-  overflow-y: scroll;
 }
-
+.final_step_btn {
+  color: #418bba;
+  font-size: x-large;
+  font-family: "Font Awesome 5 Free";
+  border: outset;
+}
 .friends-search {
   display: flex;
   justify-content: center;
@@ -280,10 +287,12 @@
   display: flex;
   width: 100%;
   height: 100%;
+  justify-content: center;
 }
 .icon {
   font-size: large;
   margin-right: 2%;
+  color: #7e7171;
 }
 @media (min-width: 1024px) {
   .imagePreview {
@@ -306,6 +315,9 @@
     display: flex;
     height: fit-content;
   }
+}
+::ng-deep .mat-option-text {
+  text-align: center;
 }
 mat-slide-toggle {
   width: fit-content;
@@ -419,18 +431,14 @@ p {
   width: 100%;
   background-size: cover;
 }
-@media (min-width: 1024px) {
-  .post-descriptionD {
-    display: flex;
-    width: 100%;
-  }
+
+.post-descriptionD {
+  display: flex;
+  width: 100%;
+  margin: 2% 0% 0%;
+  justify-content: center;
 }
-@media (max-width: 1024px) {
-  .post-descriptionD {
-    display: flex;
-    width: 100%;
-  }
-}
+
 .post-descriptionM {
   display: flex;
   width: 100%;
@@ -438,10 +446,9 @@ p {
   margin-bottom: 5%;
 }
 .post {
-  display: flex;
-  width: 100%;
+  width: 35%;
   height: 100%;
-  resize: none;
+  // resize: none;
 }
 .postM {
   display: flex;
@@ -461,21 +468,14 @@ p {
   color: #418bba;
   justify-content: center;
 }
-@media (min-width: 1024px) {
-  .row {
-    display: flex;
-    flex-direction: row;
-    margin-top: 5%;
-  }
+
+.row {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: center;
 }
-@media (max-width: 1024px) {
-  .row {
-    display: flex;
-    flex-direction: row;
-    width: 97%;
-    margin-top: 2%;
-  }
-}
+
 .rowP {
   display: flex;
   flex-direction: row;
@@ -491,27 +491,13 @@ p {
   color: #7e7171;
   font-family: "Font Awesome 5 Free";
 }
-@media (min-width: 1024px) {
-  .right {
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-    width: 85%;
-    height: 100%;
-    margin-left: 2%;
-    position: relative;
-  }
-}
-@media (max-width: 1024px) {
-  .right {
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-    width: 100%;
-    height: 100%;
-    margin-bottom: 12%;
-    position: relative;
-  }
+
+.right {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  margin: 0% 25%;
+  position: relative;
 }
 
 .right-mid {
@@ -534,7 +520,12 @@ p {
   width: 50%;
   position: relative;
 }
-
+.selection_styles {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  margin: 0% 27%;
+}
 .sliders {
   display: flex;
   flex-direction: column;
@@ -568,7 +559,9 @@ p {
   width: 100%;
   height: fit-content;
   justify-content: center;
-  aspect-ratio: 4/3;
+  // Might be good to use for post feed display..
+  /* aspect-ratio: 4/3; */
+  max-width: 250px;
 }
 .step_2 {
   display: flex;
@@ -576,6 +569,10 @@ p {
 }
 .step_2_none {
   display: none;
+}
+.tag_friends_box {
+  display: flex;
+  margin: 0% 25%;
 }
 .tagged-friends {
   display: flex;
@@ -609,6 +606,7 @@ p {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  align-items: center;
   color: #7e7171;
   font-family: "Font Awesome 5 Free";
 }
@@ -645,11 +643,6 @@ p {
 }
 .text-input {
   width: 100%;
-}
-.textU {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
 }
 .trash {
   display: flex;
