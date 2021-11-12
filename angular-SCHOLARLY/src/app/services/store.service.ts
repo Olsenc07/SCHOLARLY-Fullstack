@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, ReplaySubject } from 'rxjs';
+import { Observable, ReplaySubject, throwError } from 'rxjs';
+import { catchError, retry } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 
@@ -32,7 +33,7 @@ export interface NewUserId {
 }
 
 export interface Cards {
-  UserName: String;
+  UserName: string;
   Major: String;
   Minor: String;
   Sport: String;
@@ -94,6 +95,15 @@ export class StoreService {
 
 
   static profile$$: ReplaySubject<Profile> = new ReplaySubject<Profile>(1);
+  handleError: any;
+  // Put: update observable
+  // updateProfile(profile$$: Profile): Observable<Profile> {
+  //   return this.http.put<Profile>(this. , profile$$)
+  //   .pipe(
+  //     catchError(this.handleError('error', profile$$))
+  //   );
+  // }
+ 
   static userId$$: ReplaySubject<NewUserId> = new ReplaySubject<NewUserId>(1);
 
   // static profile$$: string[];

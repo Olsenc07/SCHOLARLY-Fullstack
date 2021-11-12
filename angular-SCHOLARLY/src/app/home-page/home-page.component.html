@@ -1,11 +1,11 @@
 <!-- Main logo -->
 <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
   <div fxLayout="row ">
-    <div class="side-spacer"></div>
-    <div fxLayout="column" fxLayoutAlign="center center" class="pic">
-      <img Src="../../assets/Pics/ProperInAppLogo.jpeg" class="pic">
-      <div class="content" class="row">
-        <span class="main-text main-text-small">
+    <!-- <div class="side-spacer"></div> -->
+    <div fxLayout="column" fxLayoutAlign="center center" class="box">
+      <img Src="../../assets/Pics/WhiteSquareInAppLogo.jpg" class="pic">
+      <div class="content" class="column">
+        <span class="main-text ">
           <a>Enhance your University experience with Scholarly</a>
         </span>
         <!-- Container holding the log in form -->
@@ -21,7 +21,7 @@
           </mat-form-field>
           <mat-form-field class="text-input">
             <mat-label>Password</mat-label>
-            <input matInput [formControl]="password" type="password" placeholder="Password" />
+            <input matInput [formControl]="password" type="password" />
             <!-- <button color="primary" mat-button matSuffix mat-icon-button aria-label="Clear" type="button"
               (click)="clearPassword()">
               <mat-icon>close</mat-icon>
@@ -41,6 +41,6 @@
         </div>
       </div>
     </div>
-    <div class="side-spacer"></div>
+    <!-- <div class="side-spacer"></div> -->
   </div>
 </form>
