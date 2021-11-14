@@ -85,6 +85,8 @@
   display: flex;
   width: 100%;
   height: 100%;
+  // Spacing for mutliple cards
+  margin: 1% 0%;
 }
 
 .fit_ {
@@ -138,7 +140,7 @@
   display: flex;
   justify-content: center;
   flex-direction: column;
-  // font-weight: 500;
+  font-size: small;
   text-align: center;
 }
 .link {
@@ -161,14 +163,14 @@
   display: flex;
   // border-radius: 50%;
   // // border: groove;
-  margin-right: 2%;
+  // margin-right: 2%;
   // margin-bottom: 1%;
 }
 .postTitle {
   display: flex;
-  font-weight: bolder;
   flex-direction: column;
   justify-content: center;
+  text-align: center;
 }
 .postLocation {
   display: flex;
@@ -188,6 +190,9 @@
   overflow-y: visible;
   height: fit-content;
   justify-content: center;
+  border: groove;
+  border-color: #ececee;
+  text-align: center;
 }
 
 ::ng-deep .mat-radio-label {
