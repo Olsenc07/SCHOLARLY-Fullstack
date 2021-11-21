@@ -39,6 +39,16 @@
   margin: 2% 0%;
   font-size: x-large;
   color: #7e7171;
+  font-weight: 600;
+  font-family: "Font Awesome 5 Free";
+  text-align: center;
+}
+.center_single {
+  display: flex;
+  justify-content: center;
+  margin: 2% 0%;
+  font-size: x-large;
+  color: #7e7171;
   font-family: "Font Awesome 5 Free";
   text-align: center;
 }
@@ -107,7 +117,8 @@
     display: contents;
     justify-content: center;
     font-size: xx-large;
-    color: #3a3232;
+    font-weight: 700;
+    color: #807070;
     font-family: "Font Awesome 5 Free";
   }
 }
@@ -116,7 +127,8 @@
     display: contents;
     justify-content: center;
     font-size: x-large;
-    color: #3a3232;
+    font-weight: 700;
+    color: #807070;
     font-family: "Font Awesome 5 Free";
   }
 }
@@ -357,7 +369,7 @@
 .hide {
   display: flex;
   width: 100%;
-  margin: 1% 0%;
+  margin: 0% 0% 1% 0%;
 }
 
 @media (min-width: 1025px) {

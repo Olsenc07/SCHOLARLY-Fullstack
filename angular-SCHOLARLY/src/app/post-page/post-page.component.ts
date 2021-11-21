@@ -1,5 +1,5 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, FormBuilder, Validators, Form } from '@angular/forms';
+import { FormControl, FormGroup, FormBuilder, Validators, Form, NgForm } from '@angular/forms';
 
 import {
   MomentDateAdapter,
@@ -97,20 +97,19 @@ export class PostPageComponent implements OnInit {
   thirdFormGroup: FormGroup;
   fourthFormGroup: FormGroup;
 
-
-  postForm = new FormGroup({
-    // Desktop
-    Title: this.Title,
-    postDescription: this.postDescription,
-    upload: this.upload,
-    postLocation: this.postLocation,
-    friendCtrl: this.friendCtrl,
-  });
+  // postForm = new FormGroup({
+  //   Title: this.Title,
+  //   postDescription: this.postDescription,
+  //   upload: this.upload,
+  //   postLocation: this.postLocation,
+  //   friendCtrl: this.friendCtrl,
+  // });
 
 
 
   constructor(public dialog: MatDialog, public searchListService: SearchListService,
               private fb: FormBuilder, private postService: PostService) {
+
     this.Title.valueChanges.subscribe((v) => this.TitleLength.next(v.length));
     // Desktop tag friends
     this.filteredFriends = this.friendCtrl.valueChanges.pipe(
@@ -127,12 +126,12 @@ export class PostPageComponent implements OnInit {
       gender: new FormControl(''),
     });
 
-
     this.thirdFormGroup = this.fb.group({
       driver: new FormControl(''),
       paymentService: new FormControl(''),
       virtual: new FormControl(''),
     });
+
     this.fourthFormGroup = this.fb.group({
       event: new FormControl(''),
     });
@@ -225,7 +224,7 @@ export class PostPageComponent implements OnInit {
     console.log(this.secondFormGroup.value);
     console.log(this.thirdFormGroup.value);
     console.log(this.fourthFormGroup.value);
-    console.log(this.postForm.value);
+    console.log(this.postDescription.value);
 
 
     const post: Post = {
