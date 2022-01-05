@@ -5,21 +5,21 @@
       <!-- Friend request box -->
 
 
-      <div class="row" *ngIf="requests.length !== 0">
+      <div class="row" *ngIf="profiles.length !== 0">
         <div class="title">Friend Requests</div>
       </div>
 
-      <div class="fit" *ngIf="requests.length == 0">
+      <div class="fit_" *ngIf="profiles.length == 0">
         <div class="noRequests">
           No Current Requests
           <i class="fas fa-users-slash icon"></i>
         </div>
       </div>
 
-      <div class="fit" *ngIf="requests.length !== 0 ">
+      <div class="fit" *ngIf="profiles.length !== 0 ">
         <!-- If ids are on friend list -->
-        <app-card-request class="adds" *ngFor="let request of requests">
-          {{request}}
+        <app-card-request class="adds" [ngForOf]="profiles">
+        
         </app-card-request>
       </div>
 
@@ -57,10 +57,10 @@
 
             <div class="message">
               Click The Hand Shake Icon On Your Friends Lists To Display Mututal Friends
-              <i class="far fa-handshake messageIcon "></i>
+              <i class="material-icons messageIcon ">handshake</i>
               <div class="remove_explained">
            To remove a user from a list, click
-              <i class="fas fa-user-minus remove_icon"></i>
+              <i class="material-icons remove_icon">person_remove</i>
             
 </div>
 
@@ -180,7 +180,7 @@
                 <div class="middle">
                   <div class="following-box">
                     <div class="follower-s">
-                      <div class="row" *ngIf="requests.length !== 0">
+                      <div class="row" *ngIf="profiles.length !== 0">
                         <div class="title">Friend Requests</div>
                       </div>
 
@@ -194,8 +194,8 @@
                       </div> -->
 
                       <div>
-                        <app-card-request class="adds background" *ngFor="let request of requests">
-                          {{request}}
+                        <app-card-request class="adds background" [ngForOf]="profiles">
+                         
                         </app-card-request>
 
                         <div class="p_"></div>

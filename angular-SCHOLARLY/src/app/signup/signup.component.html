@@ -6,8 +6,6 @@
       <mat-tab disabled>
 
 
-
-
         <!-- Messsage is sent to verify email once email is typed in and the option to verify this email
           pops up and when they click it, it then sends the verification email. Then when they verify it. The next button is un disabled and they
         can continue creating their account -->
@@ -16,7 +14,7 @@
             <mat-icon><span class="material-icons-two-tone">
                 verified
               </span></mat-icon>
-            Required
+            <div class="matTitle">Required</div>
           </ng-template>
           <div class="inputTop">
             <span class="material-icons _icon">
@@ -115,7 +113,7 @@
             </div>
           </div>
           <div class="existing-account-layout">
-            <!-- [disabled]="!requiredForm.valid" -->
+           
             <button type="button" mat-raised-button class="existing-account-style" (click)="onSubmitPartOne()"
               (click)="changeTab()" [disabled]="!requiredForm.valid">
               Next
@@ -124,7 +122,7 @@
           </div>
           <!-- I have an existing account Button  -->
           <div class="existed-centered">
-            <button mat-flat-button routerLink="/login" class="existing-account-style-btn">
+            <button mat-raised-button routerLink="/login" class="existing-account-style-btn">
               I have an existing account
             </button>
 
@@ -139,7 +137,8 @@
             <mat-icon><span class="material-icons-two-tone">
                 badge
               </span></mat-icon>
-            Personalize
+              <div class="matTitle">Personalize</div>
+            
           </ng-template>
 
 
@@ -154,14 +153,14 @@
                   <div>
                     <div class="centerD">
                       <div class="textU"> Upload Profile Picture</div>
-                      <button mat-icon-button *ngIf="profilePic.value " (click)="clearProfilePic()">
-                        <div class=" far fa-trash-alt"></div>
+                      <button mat-icon-button *ngIf="profilePic.value " (click)="clearProfilePic()" >
+                        <div class="material-icons">delete_forever</div>
                       </button>
                     </div>
 
                     <div class="rowP_">
-                      <button mat-button (click)="uploadFileP()">
-                        <div class="material-icons Photo">
+                      <button mat-fab  (click)="uploadFileP()">
+                        <div class="material-icons icon">
                           add_a_photo
                         </div>
                       </button>
@@ -212,7 +211,7 @@
 
           <div class="personalize">
             <div class="input">
-              <i class="far fa-address-card _icon"></i>
+              <i class="material-icons _icon">badge</i>
               <mat-form-field>
                 <input matInput placeholder="Full Name" [formControl]="name" />
                 <mat-error *ngIf="name.invalid">Please enter your name</mat-error>
@@ -233,7 +232,7 @@
             <div class="input">
               <!-- Birthday picker -->
               <div class="column">
-                <i class="fas fa-birthday-cake icon"></i>
+                <i class="material-icons icon">cake</i>
                 <!-- <p class="asthetic-adds ">Birthday</p> -->
               </div>
               <mat-form-field appearance="fill">
@@ -265,10 +264,12 @@
       <mat-tab disabled>
         <!-- <form [formGroup]="showCase"> -->
         <ng-template mat-tab-label>
-          <span class="material-icons">
-            add_to_photos
+        <mat-icon>  <span class="material-icons-two-tone">
+            photo_library
           </span>
-          Showcase
+        </mat-icon>
+        <div class="matTitle">
+          Showcase</div>
         </ng-template>
         <div class="snapShots">
           <h2 class="center-text">
@@ -319,14 +320,14 @@
                 <div class="textU"> Upload Photo</div>
                 <button mat-icon-button class="trash" [ngClass]="showCase.value ? 'show_' : 'hide' " color="primary"
                   (click)="clearPic()">
-                  <div class=" far fa-trash-alt"></div>
+                  <div class="material-icons">delete_forever</div>
                 </button>
 
               </div>
 
 
               <div class="rowP_">
-                <button class="cameraIcon" mat-button (click)="uploadFile()">
+                <button class="cameraIcon" mat-fab  (click)="uploadFile()">
                   <span class="material-icons icon Photo">
                     photo_library
 
@@ -400,8 +401,13 @@
           <mat-icon class=""><span class="material-icons-two-tone">
               school
             </span></mat-icon>
-          Academic
+            <div class="matTitle">Academic</div>
         </ng-template>
+
+        <h2 class="center-text">
+          Advertise your academic involvement
+         </h2>
+
 
         <!-- Text Field Major/Minor -->
         <div class="major-layout">
@@ -463,7 +469,7 @@
         <div class="row">
           <div class="courses">
             <div class="input">
-              <i class="fas fa-check _icon"></i>
+              <i class="material-icons _icon">check</i>
               <mat-form-field class="example-chip-list">
                 <mat-label>Completed Courses</mat-label>
                 <mat-chip-list #chipList aria-label="Class Code">
@@ -491,7 +497,7 @@
           <!-- Pursuing Courses -->
           <div class="courses">
             <div class="input">
-              <i class="fas fa-tasks _icon"></i>
+              <i class="material-icons _icon">checklist</i>
 
               <mat-form-field class="example-chip-list">
                 <mat-label>Pursuing Courses</mat-label>
@@ -521,7 +527,7 @@
 
         <div class="createBtn">
           <button mat-raised-button class="cBtnB" (click)="changeTab3()">Back</button>
-          <i class="fas fa-user-graduate cBtnI"></i>
+          <i class="material-icons cBtnI">school</i>
           <button mat-raised-button class="cBtn" routerLink="/search" type="button" (click)="onSubmit()">Create</button>
         </div>
       </mat-tab>

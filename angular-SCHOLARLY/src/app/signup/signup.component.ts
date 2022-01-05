@@ -68,15 +68,11 @@ export const MY_FORMATS = {
 
 
 
-
 export class SignupComponent implements OnInit {
   visible = true;
   selectable = true;
   removable = true;
   separatorKeysCodes: number[] = [ENTER, COMMA];
-
-
-
 
 
 
@@ -477,6 +473,7 @@ export class SignupComponent implements OnInit {
 
 
     const profile: Profile = {
+      UserName: this.username.value,
       CodeCompleted: this.CodeCompleted.value,
       CodePursuing: this.CodePursuing.value,
       Name: this.name.value,

@@ -83,6 +83,8 @@ export class EditProfileComponent implements OnInit {
   url: string[];
   cropImgPreview: any = '';
   imgChangeEvent: any = '';
+  // username isn't connected to any formcontrol its just so the profile interface is happy
+  username: FormControl = new FormControl('');
   // PP isn't connected properly i dont think, since image is being cropped then returned as a base 64 value
   profilePic: FormControl = new FormControl('');
   major: FormControl = new FormControl('');
@@ -137,7 +139,7 @@ export class EditProfileComponent implements OnInit {
   ];
 
   // Group list;
-  gList = ['', ''];
+  gList = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
 
   // Post list;
   pList = ['', ''];
@@ -218,7 +220,7 @@ export class EditProfileComponent implements OnInit {
   }
 
   // SnapShot
-  // After its added to the list. Click save and 
+  // After its added to the list. Click save and
   // this becomes the updated array, sent back to the data base
   arrayAdd(event: any): any {
     this.list.unshift(this.showCase.value);
@@ -349,18 +351,20 @@ export class EditProfileComponent implements OnInit {
   nextGroupCard(): number {
     ++this.g;
     if (this.g >= this.gList.length) {
-      this.g = 0
-      return this.g
+      this.g = 0;
+      return this.g;
     }
     console.log(this.g);
     // go forward one card
+    // const NextG = document.getElementById('groupCard');
+    // NextG.scrollIntoView();
   }
   leaveGroup(): number {
     this.gList.splice(this.g, 1);
     console.log(this.gList.length);
     if (this.g === this.gList.length) {
       this.g = this.g - 1;
-      return this.g
+      return this.g;
     }
   }
 
@@ -398,26 +402,26 @@ export class EditProfileComponent implements OnInit {
   previousCard(): number {
     --this.i;
     if (0 > this.i) {
-      this.i = this.list.length - 1
-      return this.i
+      this.i = this.list.length - 1;
+      return this.i;
     }
     console.log(this.i);
   }
   nextCard(): number {
     ++this.i;
     if (this.i >= this.list.length) {
-      this.i = 0
-      return this.i
+      this.i = 0;
+      return this.i;
     }
     console.log(this.i);
     // go forward one card
   }
   deleteSnapShot(): number {
-    this.list.splice(this.i, 1)
+    this.list.splice(this.i, 1);
     console.log(this.list.length);
-    if (this.i == this.list.length) {
-      this.i = this.i - 1
-      return this.i
+    if (this.i === this.list.length) {
+      this.i = this.i - 1;
+      return this.i;
     }
   }
 
@@ -431,6 +435,7 @@ export class EditProfileComponent implements OnInit {
     // TODO: convert form fields to Profile
 
     const profile: Profile = {
+      UserName: this.username.value,
       CodeCompleted: this.CodeCompleted.value,
       CodePursuing: this.CodePursuing.value,
       Name: this.name.value,

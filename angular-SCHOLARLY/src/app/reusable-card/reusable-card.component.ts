@@ -1,20 +1,26 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { OnInit } from '@angular/core';
 import { AttendanceComponent } from '../main-pages/main-pages.component';
 import { TaggedComponent } from '../main-pages/main-pages.component';
-import { PostService } from '../services/post.service';
 import { StoreService } from '../services/store.service';
+import { Post, PostService } from '../services/post.service';
+import { Subscription, Subject } from 'rxjs';
 
 @Component({
     selector: 'app-card',
     templateUrl: './reusable-card.component.html',
     styleUrls: ['./reusable-card.component.scss'],
 })
-export class ReusableCardComponent {
+export class ReusableCardComponent implements OnInit{
+    // Filling with Post info from post.service
+    posts: Post[] = [];
+    private postsSub: Subscription;
 
-    post = PostService.post$$;
+
+    // post = PostService.post$$;
     profile = StoreService.profile$$;
-    id = StoreService.userId$$;
+    ids = StoreService.userId$$;
 
 
     // gender$ = PostService.gender$;
@@ -30,7 +36,7 @@ export class ReusableCardComponent {
         // '../../assets/Pics/IMG-8413.PNG',
         // '../../assets/Pics/IMG-8619.PNG',
         '../../assets/Pics/WhiteSquareInAppLogo.jpg',
-        // '../../assets/Pics/IMG-8413.PNG', 
+        // '../../assets/Pics/IMG-8413.PNG',
         // '../../assets/Pics/IMG-8619.PNG',
         // '../../assets/Pics/ProperInAppLogo.jpeg ',
         // '../../assets/Pics/IMG-8413.PNG'
@@ -47,6 +53,24 @@ export class ReusableCardComponent {
         this.bottomSheet.open(TaggedComponent);
     }
 
-    constructor(private bottomSheet: MatBottomSheet) { }
+
+
+    constructor(private bottomSheet: MatBottomSheet,
+                public postService: PostService) { }
+
+    ngOnInit(): void {
+         this.postService.getPosts();
+         this.postsSub = this.postService.getPostUpdateListener()
+          .subscribe((posts: Post[]) => {
+          this.posts = posts;
+          console.log(this.posts);
+        });
+      }
+
+
+    //   ngOnDestroy(): void{
+    //     this.postsSub.unsubscribe();
+    //   }
+
 }
 

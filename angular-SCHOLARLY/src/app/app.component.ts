@@ -8,9 +8,6 @@ import { filter, map, tap } from 'rxjs/operators';
 
 
 
-
-
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -129,6 +126,11 @@ export class AppComponent implements OnInit {
   // searchIcon.addEventListener("click", activateSearch);
   activateSearch(): void {
     this.searchBox.classList.toggle('active');
+  }
+
+  // Search user
+  search_user(): void{
+
   }
 
   search_(): void {

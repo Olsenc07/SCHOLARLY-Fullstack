@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { StoreService } from '../services/store.service';
+import { StoreService, Profile } from '../services/store.service';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -7,13 +8,24 @@ import { StoreService } from '../services/store.service';
     templateUrl: './reusable-card-user.component.html',
     styleUrls: ['./reusable-card-user.component.scss'],
 })
-export class ReusableCardUserComponent {
+export class ReusableCardUserComponent implements OnInit {
+    storeProfiles: Profile[] = [];
+    profiles: Profile[] = [];
+    private profilesSub: Subscription;
     // sends request to data base to get mutual friends list, by clicking on shaking hands emoji
     profile = StoreService.profile$$;
     id = StoreService.userId$$;
 
 
-    constructor() { }
+    constructor(public storeService: StoreService) { }
+
+    ngOnInit() {
+        this.storeService.getProfiles();
+        this.profilesSub = this.storeService.getProfileUpdateListener()
+         .subscribe((profiles: Profile[]) => {
+             this.profiles = profiles;
+         });
+    }
 
 }
 
@@ -23,10 +35,21 @@ export class ReusableCardUserComponent {
     templateUrl: './reusable-card-message.component.html',
     styleUrls: ['./reusable-card-user.component.scss'],
 })
-export class ReusableCardMessageComponent {
+export class ReusableCardMessageComponent implements OnInit {
+    storeProfiles: Profile[] = [];
+    profiles: Profile[] = [];
+    private profilesSub: Subscription;
     // Gets the id == id to fill mutual friends list from data base
     profile = StoreService.profile$$;
-    constructor() { }
+    constructor(public storeService: StoreService) { }
+
+    ngOnInit() {
+        this.storeService.getProfiles();
+        this.profilesSub = this.storeService.getProfileUpdateListener()
+         .subscribe((profiles: Profile[]) => {
+             this.profiles = profiles;
+         });
+    }
 }
 
 
@@ -35,8 +58,19 @@ export class ReusableCardMessageComponent {
     templateUrl: './reusable-card-mutual.component.html',
     styleUrls: ['./reusable-card-user.component.scss'],
 })
-export class ReusableCardMutualComponent {
+export class ReusableCardMutualComponent implements OnInit{
+    storeProfiles: Profile[] = [];
+    profiles: Profile[] = [];
+    private profilesSub: Subscription;
     // Gets the id == id to fill mutual friends list from data base
     profile = StoreService.profile$$;
-    constructor() { }
+    constructor(public storeService: StoreService) { }
+
+    ngOnInit() {
+        this.storeService.getProfiles();
+        this.profilesSub = this.storeService.getProfileUpdateListener()
+         .subscribe((profiles: Profile[]) => {
+             this.profiles = profiles;
+         });
+    }
 }

@@ -74,11 +74,13 @@ h4:focus {
   height: 100%;
   width: 100%;
   align-items: center;
+  box-shadow: 0px 2px 3px;
 }
 .b_up {
   display: flex;
   justify-content: center;
   margin: 0% 2%;
+  box-shadow: 0px -2px 3px;
 }
 
 .look-nice {
@@ -100,9 +102,11 @@ h4:focus {
     justify-content: center;
     align-items: center;
     margin-right: 5%;
-    border: ridge;
-    border-color: azure;
+    // border: ridge;
+    // border-color: azure;
     background-color: white;
+    border-radius: 5px;
+    box-shadow: 0px 0px 7px 3px;
   }
   .search-box__icon {
     display: flex;
@@ -111,7 +115,7 @@ h4:focus {
     color: lightblue;
     background-color: white;
     padding: 1%;
-    // border: ridge;
+    justify-content: center;
     border-color: azure;
   }
   .search-box__input {
@@ -178,6 +182,7 @@ h4:focus {
     height: 100%;
     width: 100%;
     align-items: center;
+    margin-right: 5%;
   }
 }
 // Bottom Nav
@@ -188,7 +193,11 @@ h4:focus {
     box-shadow: 0px 2px 5px 0px $box-shadow-color;
     bottom: 0;
     background-color: rgb(9, 0, 61);
+    color: white;
   }
+}
+.lowerSettings {
+  box-shadow: 0px -2px 3px;
 }
 @media (min-width: 1025px) {
   .lower {
@@ -205,7 +214,7 @@ h4:focus {
 .PublicOnM {
   display: flex;
   justify-content: center;
-  color: cornflowerblue;
+  color: #b8dde9;
   font-size: 6vmax;
 }
 
@@ -218,7 +227,7 @@ h4:focus {
 .PostOnM {
   display: flex;
   justify-content: center;
-  color: cornflowerblue;
+  color: #b8dde9;
   font-size: 6vmax;
 }
 ::ng-deep .mat-menu-content {
@@ -234,7 +243,7 @@ h4:focus {
 .MessageOnM {
   font-size: 6vmax;
   display: flex;
-  color: cornflowerblue;
+  color: #b8dde9;
   justify-content: center;
 }
 .groupsM {
@@ -246,7 +255,7 @@ h4:focus {
 .GroupsOnM {
   font-size: 6vmax;
   display: flex;
-  color: cornflowerblue;
+  color: #b8dde9;
   justify-content: center;
 }
 .profileM {
@@ -258,7 +267,7 @@ h4:focus {
 .ProfileOnM {
   display: flex;
   font-size: 6vmax;
-  color: cornflowerblue;
+  color: #b8dde9;
   justify-content: center;
 }
 .postM {
@@ -288,7 +297,7 @@ h4:focus {
 .PublicOn {
   display: flex;
   justify-content: center;
-  color: cornflowerblue;
+  color: #b8dde9;
   font-size: 4vmax;
 }
 .groups {
@@ -300,7 +309,7 @@ h4:focus {
 .GroupsOn {
   font-size: 4vmax;
   display: flex;
-  color: cornflowerblue;
+  color: #b8dde9;
   justify-content: center;
 }
 .profile {
@@ -312,7 +321,7 @@ h4:focus {
 .ProfileOn {
   display: flex;
   font-size: 4vmax;
-  color: cornflowerblue;
+  color: #b8dde9;
   justify-content: center;
 }
 .post {
@@ -324,7 +333,7 @@ h4:focus {
 .PostOn {
   display: flex;
   font-size: 4vw;
-  color: cornflowerblue;
+  color: #b8dde9;
   justify-content: center;
 }
 .message {
@@ -336,7 +345,7 @@ h4:focus {
 .MessageOn {
   display: flex;
   font-size: 4vw;
-  color: cornflowerblue;
+  color: #b8dde9;
   justify-content: center;
 }
 
@@ -349,7 +358,7 @@ h4:focus {
     font-size: initial;
     float: right;
     position: absolute;
-    border-radius: 5%;
+    border-radius: 9%;
     display: flex;
     flex-direction: row;
     opacity: 0.7%;
@@ -377,6 +386,7 @@ h4:focus {
     display: flex;
     justify-content: center;
     width: auto;
+    font-size: xx-large;
   }
   .search-box__icon_ {
     color: lightblue;
@@ -390,7 +400,7 @@ h4:focus {
   }
   .search-box {
     display: flex;
-    margin-right: 10%;
+    margin-right: 16%;
     position: absolute;
   }
   @media (min-width: 400px) {

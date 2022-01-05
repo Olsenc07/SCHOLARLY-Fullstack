@@ -2,11 +2,11 @@
   "name": "angular_scholarly_test_jbl",
   "version": "1.0.0",
   "description": "firebase connection",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cd angular-SCHOLARLY && npm run build && cd .. && node index.js",
-    "dev": "nodemon ./index.js"
+    "start": "cd angular-SCHOLARLY && npm run build && cd .. && node server.js",
+    "dev": "nodemon ./server.js"
   },
   "keywords": [],
   "author": "",
@@ -15,8 +15,10 @@
     "@angular/cli": "^13.0.1",
     "@angular/core": "^13.0.0",
     "@angular/fire": "^7.1.1",
+    "body": "^5.1.0",
     "express": "^4.17.1",
     "firebase-tools": "^9.22.0",
+    "parser": "^0.1.4",
     "rxjs": "^7.4.0"
   },
   "repository": {

@@ -3,6 +3,10 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { SearchListService } from '../services/search.service';
+import { Post, PostService } from '../services/post.service';
+import { StoreService, Profile } from '../services/store.service';
+import { Subscription } from 'rxjs';
+
 
 interface SearchOption {
   value: string;
@@ -14,6 +18,16 @@ interface SearchOption {
   styleUrls: ['./search.component.scss'],
 })
 export class SearchComponent implements OnInit {
+  storedPosts: Post[] = [];
+  posts: Post[] = [];
+  private postsSub: Subscription;
+
+  storeProfiles: Profile[] = [];
+  profiles: Profile[] = [];
+  private profilesSub: Subscription;
+
+
+
 
   // Should pull in from data base(with the cards"reccomendations"), adds and reccomendations of whatever I decide
   // make sure they display nicely and one add doesnt get way more time then others
@@ -26,10 +40,10 @@ export class SearchComponent implements OnInit {
   feeds = [{}, { }, {}, {}, {}, { }, {}, {}, {}, { }, {}, {},
 
   ];
-  posts = [{}, { }, {}, {}, {}, { }, {}, {}, {}, { }, {}, {},
 
 
-  ];
+
+
   // Mock list but these are needed to fill app-card-request in ngFor
   // Will be pulled from back end, but how does the selector know to fill???
 
@@ -48,15 +62,38 @@ export class SearchComponent implements OnInit {
   public searchOptions: SearchOption[];
   main = '';
 
+
   public opt = 0;
   displaySpecificSearch(): void {
     this.opt++;
   }
-
-
-  ngOnInit(): void {
-    this.searchOptions = this.searchListService.getSearchOptions();
+  onPostsAdded(post): any{
+    this.storedPosts.push(post);
   }
+
+  constructor(
+    public dialog: MatDialog,
+    public searchListService: SearchListService,
+    private router: Router,
+    public postService: PostService,
+    public storeService: StoreService,
+  ) { }
+
+  ngOnInit() {
+    this.searchOptions = this.searchListService.getSearchOptions();
+    this.postService.getPosts();
+    this.postsSub = this.postService.getPostUpdateListener()
+      .subscribe((posts: Post[]) => {
+      this.posts = posts;
+    });
+    this.storeService.getProfiles();
+    this.profilesSub = this.storeService.getProfileUpdateListener()
+         .subscribe((profiles: Profile[]) => {
+             this.profiles = profiles;
+         });
+  }
+
+
 
   onSearchSelection(value: string): void {
     this.specificOptions = this.searchListService.onSearchSelection(value);
@@ -64,18 +101,9 @@ export class SearchComponent implements OnInit {
   }
 
 
-  constructor(
-    public dialog: MatDialog,
-    public searchListService: SearchListService,
-    private router: Router
-  ) { }
-
   navigateToPage(value: string): void {
     this.router.navigate(['/main'], { queryParams: { category: value } });
   }
-
-
-
 
 
   clearSearch(): void {

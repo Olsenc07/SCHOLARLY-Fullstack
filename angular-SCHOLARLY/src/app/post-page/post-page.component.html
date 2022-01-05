@@ -1,4 +1,4 @@
-<form  class="entire-page" (ngSubmit)="onFormSubmit()" >
+<form  class="entire-page" (ngSubmit)="onFormSubmit(postForm)" #postForm="ngForm" >
 <!-- [formGroup]="postForm" -->
   <mat-tab-group  [selectedIndex]="selectedIndexPost" mat-align-tabs="center" class="largest-page">
     <mat-tab disabled label="Step 1" > 
@@ -29,7 +29,7 @@
          Upload Post
         <div [ngClass]="upload.value ? 'Show' : 'hide' ">
           <button type="button" mat-icon-button class="trash" color="primary" (click)="clearUpload()">
-            <div class=" far fa-trash-alt"></div>
+            <div class="material-icons">delete_forever</div>
           </button>
         </div>
 
@@ -37,7 +37,7 @@
 
       <div class="row__"> Recommended Aspect Ratio 4:3</div>
       <div class="rowP">
-        <button type="button" class="cameraIcon" mat-button (click)="uploadFile()">
+        <button type="button" class="cameraIcon" mat-fab (click)="uploadFile()">
           <div class="material-icons Photo">
             add_a_photo
 
@@ -58,10 +58,14 @@
 
 <!-- Step 1 -->
 
-    <div class="centerL" *ngIf="postDescription.value || upload.value ">Where do you want your post?</div>
+    <div class="centerL" *ngIf="postDescription.value || upload.value ">Where do you want your post?
+
+      
+
+    </div>
     <div class="selection_styles" *ngIf="postDescription.value || upload.value ">
     <mat-selection-list #options [multiple]="false">
-      <mat-form-field appearance="fill">
+      <mat-form-field appearance="fill" class="shadow1">
         <mat-label>Step 1: Choose from the main categories</mat-label>
         <mat-select [formControl]="postLocationMain">
           <mat-option (click)="onSearchSelection(opt.value)" [selected]="opt.name" [multiple]="false"
@@ -72,75 +76,89 @@
     </mat-selection-list>
 
     <!-- Step 2 -->
-    
-      <mat-selection-list #options2 class="mat-list-text" [multiple]="false" *ngIf="postLocationMain.value">
-<mat-form-field appearance="fill">
+      <mat-selection-list id="nextBtn2"  #options2 class="second_selection" [multiple]="false" >
+<mat-form-field appearance="fill" class="shadow2">
   <mat-label> Step 2: Select the specific page </mat-label>
 
-<mat-select [formControl]="postLocation" > 
-  <mat-option [multiple]="false" *ngFor="let opt of specificOptions" [value]="opt">
+<mat-select  [formControl]="postLocation" > 
+  <mat-option (click)="adjustView()" [multiple]="false" *ngFor="let opt of specificOptions"
+  [selected]="opt" [value]="opt">
         {{ opt }}
   </mat-option>
 </mat-select>
 
 </mat-form-field>
       </mat-selection-list>
+    
     </div>
 
-
-
-      <div class="center" *ngIf="(postDescription.value || upload.value) && postLocation.value " >
-<button mat-raised-button type="button" class="final_step_btn" 
- (click)="changeTab()">
-  Next Step
-</button>
-</div>
+    <div id="nextBtn" class="btmPad" *ngIf="(postDescription.value || upload.value) && postLocationMain.value " >
+      <button [disabled]="!validateBtn.valid"  mat-raised-button type="button" class="final_step_btn" 
+       (click)="changeTab()">
+        Next Step
+      </button>
+      </div>
 
     </mat-tab>
+
+
     <!-- Next page -->
     <mat-tab disabled label="Step 2"> 
       
       
+<div class="threeBox">
 
-      <div class="row">
+      <div *ngIf="minwidth" class="staticBtn">
         <button mat-raised-button type="button" class="back_btn" 
       (click)="changeTab1()">
-         Back
+      <span class="material-icons"> arrow_back </span> Back
         </button>
-
-        <div class="column_text_counter"> 
-        <div class="counter" matBadge="{{ 50 - (TitleLength | async) }}">
-        </div>
-        <mat-form-field class="text-input">
-          <mat-label>Title</mat-label>
-          <input matInput maxlength="50" [formControl]="Title">
-          <!-- <button mat-button matSuffix mat-icon-button aria-label="Clear" type="button" (click)="clearTitle()">
-            <mat-icon class="clear-button">close</mat-icon>
-          </button> -->
-
-        </mat-form-field>
-      </div>
-
-        <button type="button" mat-raised-button color="primary" class="post_btn_top_right" routerLink="/search"
-        type="submit" (click)="onFormSubmit()">Post
-        <span class="material-icons"> arrow_forward </span>
-      </button>
-
-
     </div>
 
  
 
     <div class="right">
 
+      <div *ngIf="!minwidth" class="butnBundle">
+      <div class="staticBtn">
+        <button mat-flat-button type="button" class="back_btn" 
+      (click)="changeTab1()">
+      <span class="material-icons"> arrow_back </span> Back
+        </button>
+    </div>
+
+    <div class="staticBtn2">
+      <button type="button" mat-stroked-button color="primary" class="post_btn_top_right" routerLink="/search"
+      type="submit" (click)="onFormSubmit(postForm)">Post
+      <span class="material-icons"> arrow_forward </span>
+    </button>
+  </div>
+  </div>
+
       <!-- Step1 -->
       <mat-vertical-stepper [linear]="isLinear" #stepper>
-        <mat-step [stepControl]="firstFormGroup" class="column_">
+
+
+  <mat-step [stepControl]="firstFormGroup" class="column_">
           <form [formGroup]="firstFormGroup">
             <ng-template matStepLabel>When & Where</ng-template>
+            <div class="column_text_counter"> 
+              
+              <mat-form-field class="text-input">
+                <mat-label >Title </mat-label>
+                <div matBadge="{{ 50 - (TitleLength | async) }}"></div>
+                <input matInput maxlength="50" formControlname="Title" >
+                <!-- <button mat-button matSuffix mat-icon-button aria-label="Clear" type="button" (click)="clearTitle()">
+                  <mat-icon class="clear-button">close</mat-icon>
+                </button> -->
+               
+              </mat-form-field>
+            </div>
+
+
             <mat-form-field appearance="fill">
               <mat-label>Choose a date:</mat-label>
-              <input matInput [matDatepicker]="D" formControlName="date">
+              <input matInput [matDatepicker]="D" formControlname="date">
               <mat-datepicker-toggle matSuffix [for]="D"></mat-datepicker-toggle>
               <mat-datepicker #D></mat-datepicker>
             </mat-form-field>
@@ -148,7 +166,7 @@
             <div class="default-time-example">
               <mat-form-field appearance="fill">
                 <mat-label>Time:</mat-label>
-                <input matInput formControlName="time" [ngxTimepicker]="toggleTimepicker">
+                <input matInput formControlname="time" [ngxTimepicker]="toggleTimepicker">
                 <ngx-material-timepicker-toggle matSuffix [for]="toggleTimepicker"></ngx-material-timepicker-toggle>
                 <ngx-material-timepicker #toggleTimepicker>
                 </ngx-material-timepicker>
@@ -157,7 +175,7 @@
 
             <mat-form-field appearance="fill">
               <mat-label>Location:</mat-label>
-              <input matInput formControlName="locationEvent">
+              <input matInput formControlname="locationEvent">
 
             </mat-form-field>
             <div>
@@ -166,24 +184,39 @@
           </form>
         </mat-step>
         <!-- Step 2 -->
-        <mat-step [stepControl]="secondFormGroup">
+        <mat-step [stepControl]="secondFormGroup" >
           <form [formGroup]="secondFormGroup">
             <ng-template matStepLabel>Whos Welcome To Join</ng-template>
 
             <div class="trioD">
-              <mat-radio-group aria-label="Select an option" formControlName="gender">
+              <mat-radio-group aria-label="Select an option" formControlname="gender">
 
                 <div class="margin">
-                  <p class="fas fa-venus">Females</p>
-                  <mat-radio-button class="btn_" value="female"></mat-radio-button>
+                  <div class="genderIcon_Name">
+                  <span class="material-icons">
+                    female
+                    </span>
+                    <div class="textP">  Female</div>
+                  </div>
+                  <mat-radio-button [disableRipple]="true" class="btn_" value="female"></mat-radio-button>
                 </div>
                 <div class="margin">
-                  <p class="fas fa-transgender-alt">All</p>
-                  <mat-radio-button class="btn_" value="all"></mat-radio-button>
+                  <div class="genderIcon_Name">
+                  <span class="material-icons">
+                    transgender
+                    </span>
+                    <div class="textP"> All</div>
+                    </div>
+                  <mat-radio-button [disableRipple]="true" class="btn_" value="all"></mat-radio-button>
                 </div>
                 <div class="margin">
-                  <p class="fas fa-mars">Males</p>
-                  <mat-radio-button class="btn_" value="male"></mat-radio-button>
+                  <div class="genderIcon_Name">
+                  <span class="material-icons">
+                    male
+                    </span>
+                    <div class="textP"> Male</div>
+                  </div>
+                  <mat-radio-button [disableRipple]="true" class="btn_" value="male"></mat-radio-button>
                 </div>
 
               </mat-radio-group>
@@ -196,42 +229,56 @@
           </form>
         </mat-step>
         <!-- Step3 -->
-        <mat-step [stepControl]="thirdFormGroup">
-          <form [formGroup]="thirdFormGroup">
+        <mat-step [stepControl]="thirdFormGroup" >
+          <form [formGroup]="thirdFormGroup" >
             <ng-template matStepLabel>Services</ng-template>
             <div class="display">
 
 
 <div class="column">
-              <div class="row">
-                <div class="fas fa-video icon"> </div>
+              <div class="margin">
+                <div class="genderIcon_Name">
+                <span class="material-icons display">
+                  videocam
+                  <mat-checkbox [disableRipple]="true" formControlname="virtual"></mat-checkbox>
+                  </span>
                 <div class="textP"> Virtual event</div>
-                <mat-checkbox [disableRipple]="true" class="btn" formControlName="virtual"></mat-checkbox>
+                </div>
+
               </div>
           
-              <div class="row">
-                <div class="fas fa-car icon"> </div>
-                <div class="textP"> Able to drive members</div>
-                <mat-checkbox [disableRipple]="true" class="btn" formControlName="driver"></mat-checkbox>
+              <div class="margin">
+                <div class="genderIcon_Name">
+                <span class="material-icons display">
+                  directions_car
+                  <mat-checkbox [disableRipple]="true"  formControlname="driver"></mat-checkbox>
+                  </span>
+                  
+                <div class="textP"> Transportation available</div>
+              </div>
+                
+              </div>
+
+              <div class="margin">
+                <div class="genderIcon_Name">
+                <span class="material-icons display">
+                  attach_money
+                  <mat-checkbox [disableRipple]="true" formControlname="paymentService"></mat-checkbox>
+                  </span>    
+                                
+                <div class="textP">Payment service</div>
+              </div>
+                
               </div>
             </div>
-
-
-              <button type="button" mat-button (click)="openOtherServices()">
-                <mat-icon>info</mat-icon>
-              </button>
-
-              <div class="row">
-                <div class="fas fa-dollar-sign icon"></div>
-                <div class="textP">Service involving payment </div>
-
-                <mat-checkbox [disableRipple]="true" class="btn" formControlName="paymentService"></mat-checkbox>
-              </div>
 
             </div>
             <div>
               <button type="button" mat-button matStepperPrevious>Back</button>
               <button type="button" mat-button matStepperNext>Next</button>
+              <button type="button" mat-button (click)="openOtherServices()">
+                <mat-icon>info</mat-icon>
+              </button>
             </div>
           </form>
         </mat-step>
@@ -240,24 +287,32 @@
           <form [formGroup]="fourthFormGroup">
             <ng-template matStepLabel>Type Of Event</ng-template>
 
-            <mat-radio-group aria-label="Select an option" formControlName="event">
+            <mat-radio-group aria-label="Select an option" formControlname="event">
               
 
               <div class="column">
-                <p class="fas fa-user-tie textP">Formal event</p>
-                <mat-radio-button value="formal" required>
+                <div class="btn_">
+                <span class="material-icons">
+                  work
+                  </span>
+                <div class="textP">Formal event</div>
+              </div>
+                <mat-radio-button [disableRipple]="true" value="formal" required>
 
                 </mat-radio-button>
               </div>
 
-              <button type="button" mat-button (click)="openDialog()">
-                <mat-icon>info</mat-icon>
-              </button>
+            
 
 
               <div class="column">
-                <p class="fas fa-glass-cheers textP">Relaxed event</p>
-                <mat-radio-button value="relaxed" required>
+                <div class="btn_">
+                <span class="material-icons">
+                  nightlife
+                  </span>
+                  <div class="textP">Relaxed event</div>
+                </div>
+                <mat-radio-button [disableRipple]="true" value="relaxed" required>
 
                 </mat-radio-button>
               </div>
@@ -265,6 +320,9 @@
             <div>
               <button mat-button matStepperPrevious>Back</button>
               <button mat-button matStepperNext>Next</button>
+              <button type="button" mat-button (click)="openDialog()">
+                <mat-icon>info</mat-icon>
+              </button>
             </div>
           </form>
         </mat-step>
@@ -274,41 +332,49 @@
           <div class="row_">
             <button type="button" mat-button matStepperPrevious>Back</button>
             <button mat-raised-button color="primary" class="text" routerLink="/search"
-              type="submit" (click)="onFormSubmit()">Post
+              type="submit" (click)="onFormSubmit(postForm)">Post
               <span class="material-icons"> arrow_forward </span>
             </button>
           </div>
         </mat-step>
       </mat-vertical-stepper>
+
+<!-- Tag Friends and post -->
+<div class="btmPad">
+  <mat-form-field appearance="fill" >
+    <div class="centerD">Tag Friends: start typing...</div>
+
+    <mat-chip-list #chipList aria-label="Friends selection">
+      <mat-chip *ngFor="let friend of friends" [selectable]="selectable" [removable]="removable"
+        (removed)="remove(friend)">
+        {{friend}}
+        <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+      </mat-chip>
+      <input matInput #friendInput [matAutocomplete]="auto" [matChipInputFor]="chipList" class="textT"
+        [formControl]="friendCtrl" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+        (matChipInputTokenEnd)="add($event)">
+    </mat-chip-list>
+
+    <!-- Connect to friends list -->
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+      <mat-option *ngFor="let friend of filteredFriends | async" [value]="friend">
+        {{friend}}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+  </div>
     </div>
 
-    <!-- Tag Friends and post -->
-    <div class="tag_friends_box">
-    <mat-form-field appearance="fill" >
-      <div class="centerD">Tag Friends: start typing...</div>
-
-      <mat-chip-list #chipList aria-label="Friends selection">
-        <mat-chip *ngFor="let friend of friends" [selectable]="selectable" [removable]="removable"
-          (removed)="remove(friend)">
-          {{friend}}
-          <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
-        </mat-chip>
-        <input matInput #friendInput [matAutocomplete]="auto" [matChipInputFor]="chipList" class="textT"
-          [formControl]="friendCtrl" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-          (matChipInputTokenEnd)="add($event)">
-      </mat-chip-list>
-
-      <!-- Connect to friends list -->
-      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
-        <mat-option *ngFor="let friend of filteredFriends | async" [value]="friend">
-          {{friend}}
-        </mat-option>
-      </mat-autocomplete>
-    </mat-form-field>
-    </div>
     
-    
+    <div *ngIf="minwidth" class="staticBtn2">
+    <button type="button" mat-raised-button color="primary" class="post_btn_top_right" routerLink="/search"
+    type="submit" (click)="onFormSubmit(postForm)">Post
+    <span class="material-icons"> arrow_forward </span>
+  </button>
+</div>
 
+
+</div>
 
     </mat-tab>
     
