@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { ReplaySubject, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs/operators';
 
 export interface Post {
-    id?: string;
-    PostDescription?: string;
+    id: string;
+    PostDescription: string;
     Upload?: string;
     PostLocation?: string;
     FriendCtrl?: string[];
+    Title?: string;
     Date?: string;
     Time?: string;
     LocationEvent?: string;
@@ -16,7 +18,6 @@ export interface Post {
     PaymentService?: boolean;
     Virtual?: boolean;
     Event?: string;
-    Title?: string;
     // SecondFormGroup?: string;
     // ThirdFormGroup?: string;
     // FourthFormGroup?: string;
@@ -27,17 +28,35 @@ export interface Post {
     providedIn: 'root',
 })
 export class PostService {
-static post$$: ReplaySubject<Post> = new ReplaySubject<Post>(1);
+// static post$$: ReplaySubject<Post> = new ReplaySubject<Post>(1);
 
 
 private posts: Post[] = [];
 private postsUpdated = new ReplaySubject<Post[]>();
 constructor(private http: HttpClient) {}
 
-getPosts(): void{
-    this.http.get<{message: string, posts: Post[]}>('http://localhost:3000/api/posts')
-        .subscribe((postData) => {
-            this.posts = postData.posts;
+getPosts(): any {
+    this.http.get<{message: string, posts: any}>('http://localhost:3000/api/posts')
+        .pipe(map((postData) => {
+            return postData.posts.map( post => {
+                return {
+                    Title: post.Title,
+                    PostDescription: post.PostDescription,
+                    PostLocation: post.PostLocation,
+                    LocationEvent: post.LocationEvent,
+                    Time: post.Time,
+                    Date: post.Date,
+                    Gender: post.Gender,
+                    Driver: post.Driver,
+                    PaymentService: post.PaymentService,
+                    Virtual: post.Virtual,
+                    Event: post.Event,
+                    id: post._id
+                 };
+        });
+    }))
+        .subscribe((transformedPosts) => {
+            this.posts = transformedPosts;
             this.postsUpdated.next([...this.posts]);
 });
     // console.log(this.posts);
@@ -46,17 +65,28 @@ getPosts(): void{
     getPostUpdateListener(): any {
         return this.postsUpdated.asObservable();
     }
-    addPost(id: string, PostDescription: string, LocationEvent: string): any {
-        const post: Post = {id, PostDescription, LocationEvent };
-        this.http.post<{ message: string}>('http://localhost:3000/api/posts', post)
+    addPost( PostLocation: string, PostDescription?: string, LocationEvent?: string, Title?: string, Date?: string,
+             Time?: string, Gender?: string, Driver?: boolean, PaymentService?: boolean, Virtual?: boolean, Event?: string
+        ): any {
+        const post: Post = {id: null, Title, PostDescription, PostLocation, LocationEvent,
+             Time, Date, Gender, Driver, PaymentService, Virtual, Event };
+        this.http.post<{ message: string, postId: string}>('http://localhost:3000/api/posts', post)
         .subscribe(responseData => {
-            console.log(responseData.message);
+            const id = responseData.postId;
+            post.id = id;
             this.posts.push(post);
             this.postsUpdated.next([...this.posts]);
         });
     }
 
-
+    deletePost(postId: string): any {
+        this.http.delete('http://localhost:3000/api/posts/' + postId)
+            .subscribe(() => {
+                const updatedPosts = this.posts.filter(post => post.id !== postId );
+                this.posts = updatedPosts;
+                this.postsUpdated.next([...this.posts]);
+            });
+    }
     // setPost(post: Post): void {
     //     PostService.post$$.next(post);
     // }

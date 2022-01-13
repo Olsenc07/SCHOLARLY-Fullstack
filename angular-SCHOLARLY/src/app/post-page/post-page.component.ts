@@ -20,7 +20,7 @@ import { map } from 'rxjs/operators';
 import { SearchListService } from '../services/search.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Post, PostService } from '../services/post.service';
-import { Title } from '@angular/platform-browser';
+import { mimeType } from './mime-type.validator';
 
 const moment = _moment;
 
@@ -62,7 +62,7 @@ export class PostPageComponent implements OnInit {
   public specificOptions: string[];
   public searchOptions: SearchOption[];
 
-  url: string[];
+  url: string;
 
   selectedIndex = 0;
 
@@ -85,14 +85,15 @@ export class PostPageComponent implements OnInit {
   isLinear = false;
   // Title: FormControl = new FormControl('');
   public TitleLength = new BehaviorSubject(0);
-  upload: FormControl = new FormControl('');
+  upload: FormControl = new FormControl(null, {
+  validators: [Validators.required],
+  asyncValidators: [mimeType]
+});
   postLocationMain: FormControl = new FormControl('');
   postLocation: FormControl = new FormControl('');
   postDescription: FormControl = new FormControl('');
   search: FormControl = new FormControl('');
   value: FormControl = new FormControl('');
-  
-  
 
   // Temporary
   id: FormControl = new FormControl('');
@@ -102,32 +103,31 @@ validateBtn = new FormGroup({
 });
 
 
-firstFormGroup: FormGroup = new FormGroup({
-  Title:  new FormControl(''),
-  date: new FormControl(''),
-  time: new FormControl(''),
-  locationEvent:  new FormControl(''),
-})
+// firstFormGroup: FormGroup  = new FormGroup({
+  Title: FormControl =  new FormControl('');
+  date: FormControl =  new FormControl('');
+  time: FormControl =  new FormControl('');
+  locationEvent: FormControl =  new FormControl('');
+// });
 
-secondFormGroup: FormGroup = new FormGroup({
-  gender:  new FormControl(''),
-}) 
+// secondFormGroup: FormGroup  = new FormGroup({
+  gender: FormControl =  new FormControl('');
+// });
 
-thirdFormGroup: FormGroup = new FormGroup({
-  driver:  new FormControl(''),
-  paymentService:  new FormControl(''),
-  virtual:  new FormControl(''),
-})
+// thirdFormGroup: FormGroup  = new FormGroup({
+  driver: FormControl =  new FormControl(false);
+  paymentService: FormControl =  new FormControl(false);
+  virtual: FormControl =  new FormControl(false);
+// });
 
-fourthFormGroup: FormGroup = new FormGroup({
-  event: new FormControl(''),
-})
+// fourthFormGroup: FormGroup  = new FormGroup({
+  event: FormControl = new FormControl('');
+// });
   // firstFormGroup: FormGroup;
   // secondFormGroup: FormGroup;
   // thirdFormGroup: FormGroup;
   // fourthFormGroup: FormGroup;
 
- 
 
   constructor(public dialog: MatDialog, public searchListService: SearchListService,
               private fb: FormBuilder, private postService: PostService) {
@@ -149,9 +149,9 @@ fourthFormGroup: FormGroup = new FormGroup({
     // });
 
     // this.thirdFormGroup = this.fb.group({
-    //   driver: new FormControl(''),
-    //   paymentService: new FormControl(''),
-    //   virtual: new FormControl(''),
+    //   driver: new FormControl(false),
+    //   paymentService: new FormControl(false),
+    //   virtual: new FormControl(false),
     // });
 
     // this.fourthFormGroup = this.fb.group({
@@ -170,18 +170,20 @@ fourthFormGroup: FormGroup = new FormGroup({
     this.dialog.open(ServicesElementsComponent);
   }
 
-  imagePreview(event: any): void {
-    if (event.target.files && event.target.files[0]) {
-      const reader = new FileReader();
 
-      reader.readAsDataURL(event.target.files[0]); // read file as data url
-
-      reader.onload = (Event: any) => { // called once readAsDataURL is completed
-        console.log(Event);
-        this.url = Event.target.result;
-      };
-    }
+  onImagePicked(event: Event) {
+    const file = (event.target as HTMLInputElement).files[0];
+    this.upload.updateValueAndValidity();
+    console.log(file);
+    console.log(this.upload.value);
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.url = reader.result as string;
+    };
+    reader.readAsDataURL(file);
   }
+
+
   clearUpload(): void {
     this.upload.setValue('');
     document.getElementById('upload').removeAttribute('src');
@@ -192,12 +194,11 @@ fourthFormGroup: FormGroup = new FormGroup({
   ngOnInit(): any {
     this.searchOptions = this.searchListService.getSearchOptions();
     // Doesn't keep track of value
-    this.firstFormGroup.get('Title').valueChanges.subscribe((v) => this.TitleLength.next(v.length));
-    // 
+    this.Title.valueChanges.subscribe((v) => this.TitleLength.next(v.length));
+    //
     if (window.screen.width < 1025){
       this.minwidth = false;
     }
-  
   }
   onSearchSelection(value): void {
     console.log(value);
@@ -247,46 +248,51 @@ fourthFormGroup: FormGroup = new FormGroup({
   }
 
 
-  onFormSubmit(form: NgForm): void {
+  onFormSubmit(form: NgForm) {
+    if (this.upload.invalid){
+      return;
+    }
     // TODO: wire up to post request
-    // console.log(this.firstFormGroup.value);
+    console.log(this.Title.value);
     // console.log(this.secondFormGroup.value);
     // console.log(this.thirdFormGroup.value);
     // console.log(this.fourthFormGroup.value);
-    // console.log(this.postDescription.value);
-    // console.log(this.postLocation.value);
+    console.log(this.postDescription.value);
+    console.log(this.postLocation.value);
+    // console.log(form.controls);
 
 
     const post: Post = {
-      id: this.id.value,
-      PostDescription: form.value.postDescription,
-      Upload: this.upload.value,
-      PostLocation: form.value.postLocation,
-      FriendCtrl: this.friendCtrl.value,
       Title: form.value.Title,
+      PostDescription: form.value.postDescription,
+      PostLocation: form.value.postDescription,
       LocationEvent: form.value.locationEvent,
-      Date: form.value.date,
       Time: form.value.time,
+      Date: form.value.date,
       Gender: form.value.gender,
       Driver: form.value.driver,
       PaymentService: form.value.paymentService,
       Virtual: form.value.virtual,
       Event: form.value.Event,
+      id: this.id.value,
+      Upload: this.upload.value,
+      FriendCtrl: this.friendCtrl.value,
       // SecondFormGroup: this.secondFormGroup.value,
       // ThirdFormGroup: this.thirdFormGroup.value,
       // FourthFormGroup: this.fourthFormGroup.value,
     };
 
-    // this is old connection
-    // this.postService.setPost(post);
 
-    // New one
-  // this.postService.addPost(form.value.Title)
-
-
-    this.postService.addPost(this.id.value, 
-      this.postDescription.value, this.postLocation.value);
-    // form.resetForm();
+    this.postService.addPost(this.postLocation.value,
+      this.postDescription.value, this.locationEvent.value,
+      this.Title.value,
+      this.date.value,
+      this.time.value,
+      this.gender.value,
+       this.driver.value, this.paymentService.value,
+       this.virtual.value,
+        this.event.value);
+    form.resetForm();
   }
 
 
