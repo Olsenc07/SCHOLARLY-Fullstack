@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
@@ -72,6 +72,7 @@ import { ServicesElementsComponent } from './post-page/post-page.component';
 
 
 import { ReusableCardComponent } from './reusable-card/reusable-card.component';
+import { DeleteWarningComponent } from './reusable-card/reusable-card.component';
 import { ReusableCardBriefComponent } from './reusable-card-brief/reusable-card-brief.component';
 import { ReusableCardRequestComponent } from './reusable-card-request/reusable-card-request.component';
 import { ReusableCardRecommendationComponent } from './reusable-card-request/reusable-card-request.component';
@@ -79,12 +80,17 @@ import { ReusableCardUserComponent } from './reusable-card-user/reusable-card-us
 import { ReusableCardMutualComponent } from './reusable-card-user/reusable-card-user.component';
 import { ReusableCardMessageComponent } from './reusable-card-user/reusable-card-user.component';
 import { ReusableCardConvoComponent } from './reusable-card-convo/reusable-card-convo.component';
+import { ErrorComponent } from './error/error.component';
 
 import { TaggedComponent } from './main-pages/main-pages.component';
 import { SearchListService } from './services/search.service';
 import { PostService } from './services/post.service';
 import { ClassListService } from './services/class.service';
 import { StoreService } from './services/store.service';
+import { AuthService } from './services/auth.service';
+import { AuthInterceptor } from './signup/auth-interceptor';
+import { ErrorInterceptor } from './error-interceptor';
+
 
 
 
@@ -122,6 +128,8 @@ import { StoreService } from './services/store.service';
     AccountTextComponent,
     MessagingComponent,
     ServicesElementsComponent,
+    DeleteWarningComponent,
+    ErrorComponent
   ],
   imports: [
     BrowserModule,
@@ -166,7 +174,11 @@ import { StoreService } from './services/store.service';
     MatProgressSpinnerModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: [SearchListService, PostService, ClassListService, StoreService],
+  providers: [SearchListService, PostService, ClassListService, StoreService, AuthService,
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true}
+  ],
   bootstrap: [AppComponent],
+  entryComponents: [ErrorComponent]
 })
 export class AppModule { }

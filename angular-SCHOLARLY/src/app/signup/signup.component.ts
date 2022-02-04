@@ -1,5 +1,5 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, ValidatorFn, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { Component, OnInit, ElementRef, ViewChild, OnDestroy } from '@angular/core';
+import { FormControl, FormGroup, ValidatorFn, Validators, AbstractControl, ValidationErrors, NgForm } from '@angular/forms';
 import {
   MomentDateAdapter,
   MAT_MOMENT_DATE_ADAPTER_OPTIONS,
@@ -21,19 +21,15 @@ import { ClassListService } from '../services/class.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
 import { NgxImageZoomModule } from 'ngx-image-zoom';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 // import { base64ToFile } from '../../utils/blob.utils';
 import { ImageCroppedEvent, Dimensions } from 'ngx-image-cropper';
 import { Profile, NewUserId, StoreService } from '../services/store.service';
+import { AuthService } from '../services/auth.service';
 
 
 
 
-
-
-interface Gender {
-  name: string;
-}
 const moment = _rollupMoment || _moment;
 export const MY_FORMATS = {
   parse: {
@@ -68,7 +64,9 @@ export const MY_FORMATS = {
 
 
 
-export class SignupComponent implements OnInit {
+export class SignupComponent implements OnInit, OnDestroy {
+  isLoading = false;
+  private authStatusSub: Subscription;
   visible = true;
   selectable = true;
   removable = true;
@@ -84,15 +82,7 @@ export class SignupComponent implements OnInit {
   @ViewChild('autoP') matAutocompleteP: MatAutocomplete;
 
   selectedIndex = 0;
-  genders: Gender[] = [
-    { name: '' },
-    { name: 'Female' },
-    { name: 'Male' },
-    { name: 'Other' },
-
-  ];
-
-
+  genders: string[] = ['', 'Female', 'Male', 'Other'];
   // Wont display because of security warning
   // But will be connected to abck end any way so dont worry rn
   url: string[];
@@ -112,7 +102,7 @@ export class SignupComponent implements OnInit {
   name: FormControl = new FormControl('');
   pronouns: FormControl = new FormControl('');
   birthday: FormControl = new FormControl();
-  genderChoice: FormControl = new FormControl('');
+  gender: FormControl = new FormControl('');
   email: FormControl = new FormControl('', [Validators.email, this.noWhiteSpace]);
   termsCheck: FormControl = new FormControl('');
   // PP isn't connected properly i dont think, since image is being cropped then returned as a base 64 value
@@ -134,11 +124,9 @@ export class SignupComponent implements OnInit {
 
 
   requiredForm = new FormGroup({
-    // verify email
     email: this.email,
     username: this.username,
     password: this.password,
-    genderChoice: this.genderChoice,
     accountType: new FormControl(''),
     termsCheck: this.termsCheck,
   });
@@ -146,6 +134,7 @@ export class SignupComponent implements OnInit {
   personalizeForm = new FormGroup({
     profilePic: this.profilePic,
     name: this.name,
+    gender: this.gender,
     pronouns: this.pronouns,
     birthday: this.birthday,
     bio: this.bio,
@@ -168,7 +157,6 @@ export class SignupComponent implements OnInit {
     requiredForm: this.requiredForm,
     personalizeForm: this.personalizeForm,
   });
-
 
   public noWhiteSpace(control: AbstractControl): ValidationErrors | null {
     if ((control.value as string).indexOf(' ') >= 0){
@@ -270,7 +258,8 @@ export class SignupComponent implements OnInit {
     public dialog: MatDialog,
     public classListService: ClassListService,
     private http: HttpClient,
-    private storeService: StoreService
+    private storeService: StoreService,
+    public authService: AuthService
   ) {
     // this.bio.valueChanges.subscribe((v) => this.bioLength.next(v.length));
 
@@ -425,11 +414,10 @@ export class SignupComponent implements OnInit {
   //   this.snapShot3.setValue('');
   //   document.getElementById('thirdP').removeAttribute('src');
   // }
-  changeTab(): void {
-    this.selectedIndex = this.selectedIndex === 0 ? 1 : 0;
-  }
+
   changeTab1(): void {
     this.selectedIndex = this.selectedIndex === 1 ? 2 : 1;
+    this.isLoading = false;
   }
   changeTab1R(): void {
     this.selectedIndex = this.selectedIndex === 1 ? 0 : 1;
@@ -444,66 +432,78 @@ export class SignupComponent implements OnInit {
     this.selectedIndex = this.selectedIndex === 3 ? 2 : 3;
   }
 
-
-
-
-  onSubmitPartOne(): void {
-    // TODO: wire up to login request
-    console.log(this.requiredForm.value);
-  }
-  onSubmitPartTwo(): void {
-    // TODO: wire up to login request
-    console.log(this.personalizeForm.value);
-  }
-  onSubmitPartThree(): void {
-    // TODO: wire up to login request
-    console.log(this.CodeCompleted.value);
-  }
-  onSubmit(): void {
-    // TODO: wire up to login request
-    console.log(this.signupForm.value);
-    console.log(this.filteredCodes);
-
-    const userId: NewUserId = {
-      Email: this.email.value,
-      UserName: this.username.value,
-      Password: this.password.value,
-      TermsCheck: this.termsCheck.value,
-    };
-
-
-    const profile: Profile = {
-      UserName: this.username.value,
-      CodeCompleted: this.CodeCompleted.value,
-      CodePursuing: this.CodePursuing.value,
-      Name: this.name.value,
-      Pronouns: this.pronouns.value,
-      profilePic: this.profilePic.value,
-      Gender: this.genderChoice.value,
-      Major: this.major.value,
-      Minor: this.minor.value,
-      Sport: this.sport.value,
-      Club: this.club.value,
-      profPic: this.cropImgPreview,
-      // ShowCasse: this.url.value,
-      Birthday: this.birthday.value,
-      ShowCase: this.showCase.value,
-
-    };
-    this.storeService.setProfile(profile);
-    this.storeService.setUser(userId);
-  }
-
-  ngOnInit(): void { }
-  // Image Preview
-
-
   openDialog(): void {
     this.dialog.open(TermsPopUpComponent);
   }
   openDialogAccount(): void {
     this.dialog.open(AccountTextComponent);
   }
+
+  onSubmitPartTwo(): void {
+    // TODO: wire up to login request
+    // console.log(this.personalizeForm.value);
+  }
+  onSubmitPartThree(): void {
+    // TODO: wire up to login request
+    // console.log(this.CodeCompleted.value);
+  }
+  onSubmit(): any{
+//  Email validation to continue
+    this.isLoading = true;
+    this.authService.createUser(this.email.value, this.username.value, this.password.value);
+    this.selectedIndex = this.selectedIndex === 0 ? 1 : 0;
+
+    // const userId: NewUserId = {
+    //   Email: this.email.value,
+    //   UserName: this.username.value,
+    //   Password: this.password.value,
+    //   TermsCheck: this.termsCheck.value,
+    // };
+
+
+    // const profile: Profile = {
+    //   UserName: this.username.value,
+    //   CodeCompleted: this.CodeCompleted.value,
+    //   CodePursuing: this.CodePursuing.value,
+    //   Name: this.name.value,
+    //   Pronouns: this.pronouns.value,
+    //   profilePic: this.profilePic.value,
+    //   Gender: this.genderChoice.value,
+    //   Major: this.major.value,
+    //   Minor: this.minor.value,
+    //   Sport: this.sport.value,
+    //   Club: this.club.value,
+    //   profPic: this.cropImgPreview,
+    //   // ShowCasse: this.url.value,
+    //   Birthday: this.birthday.value,
+    //   ShowCase: this.showCase.value,
+
+    // };
+    // this.storeService.setProfile(profile);
+    // this.storeService.setUser(userId);
+  }
+
+
+  onSubmit2(): any {
+    this.isLoading = true;
+    this.authService.createUserInfo( this.name.value, this.gender.value, this.birthday.value,
+     this.major.value, this.minor.value, this.sport.value, this.club.value, this.pronouns.value
+      );
+  }
+
+  ngOnInit(): void {
+   this.authStatusSub = this.authService.getAuthStatusListener().subscribe(
+     authStatus => {
+       this.isLoading = false;
+     }
+   );
+  }
+
+  ngOnDestroy(): void {
+  this.authStatusSub.unsubscribe();
+  }
+
+
 
 }
 

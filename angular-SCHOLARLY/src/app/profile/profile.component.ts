@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import { Post, PostService } from '../services/post.service';
 import { StoreService, Profile } from '../services/store.service';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
 
 
@@ -14,7 +15,12 @@ import { Subscription } from 'rxjs';
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnDestroy {
+  userId: string;
+  userIsAuthenticated = false;
+  // private authStatusSubs: Subscription;
+  private authListenerSubs: Subscription;
+
   storedPosts: Post[] = [];
   posts: Post[] = [];
   private postsSub: Subscription;
@@ -60,7 +66,8 @@ export class ProfileComponent implements OnInit {
   ];
 
   constructor(private bottomSheet: MatBottomSheet,
-              public postService: PostService) {
+              public postService: PostService,
+              private authService: AuthService) {
     // profile$$.profile$$.subscribe((profile) => {
     //   // this.profile$$ = profile;
     //   // return name;
@@ -78,23 +85,39 @@ export class ProfileComponent implements OnInit {
     this.isLoading = true;
     this.postService.getPosts();
     this.postsSub = this.postService.getPostUpdateListener()
-      .subscribe((posts: Post[]) => {
-      this.posts = posts;
-      this.isLoading = false;
+    .subscribe((posts: Post[]) => {
+    this.posts = posts;
+    this.isLoading = false;
+  });
+
+    this.userId = this.authService.getUserId();
+    this.userIsAuthenticated = this.authService.getIsAuth();
+    this.authListenerSubs = this.authService
+    .getAuthStatusListener()
+    .subscribe(isAuthenticated => {
+      this.userIsAuthenticated = isAuthenticated;
+      this.userId = this.authService.getUserId();
+      // Can add *ngIf="userIsAuthenticated" to hide items
     });
 
-    // this.Com = this.Com.map(code => code.toUpperCase()).sort();
+       // this.Com = this.Com.map(code => code.toUpperCase()).sort();
     this.Pur = this.Pur.map(code => code.toUpperCase()).sort();
 
-    // this.showCases = this.showCases.toString();
+  // this.showCases = this.showCases.toString();
     return this.Pur;
+    }
+
     // this.Com
 
-
-
+    ngOnDestroy() {
+      this.postsSub.unsubscribe();
+      this.authListenerSubs.unsubscribe();
+    }
   }
 
-}
+
+
+
 @Component({
   selector: 'app-profile',
   templateUrl: './bottom-sheet.component.html',
@@ -108,4 +131,5 @@ export class BottomSheetComponent {
     event.preventDefault();
   }
 }
+
 

@@ -2,9 +2,9 @@ const express = require('express');
 const multer = require('multer');
 
 const Post = require('/Users/chaseolsen/angular_scholarly_fs/backend/models/post');
+const checkAuth = require('/Users/chaseolsen/angular_scholarly_fs/backend/middleware/check-auth');
 
-
-const router = express.Router()
+const router = express.Router();
 
 
 const MIME_TYPE_MAP ={
@@ -28,7 +28,7 @@ const storage  = multer.diskStorage({
   
     },
     filename: (req, file, cb) => {
-        const name = file.originalname.toLowerCase().split('').join('-');
+        const name = file.originalname.toLowerCase();
         const ext = MIME_TYPE_MAP[file.mimetype];
         cb(null, name + '-' + Date.now() + '.' + ext);
     },
@@ -42,11 +42,18 @@ router.get("", (req, res, next) => {
         message: 'Posts fetched succesfully!',
         posts: documents
         });
+    })
+    .catch(error => {
+        res.status(500).json({
+            message: 'Fetching posts failed!'
+        });
     });
 });
 
 // Post additions
-router.post("", up.single('upload'), (req, res, next) => {
+router.post("", 
+    checkAuth,
+    up.single('upload'), (req, res, next) => {
     console.log(req.file)
     const url = req.protocol + '://' + req.get('host');
     const post = new Post({
@@ -61,7 +68,8 @@ router.post("", up.single('upload'), (req, res, next) => {
         PaymentService: req.body.PaymentService,
         Virtual: req.body.Virtual,
         Event: req.body.Event,
-        ImagePath: url + '/posts/' + req.file
+        ImagePath: url + '/posts/' + req.file.filename,
+        Creator: req.userData.userId
         
     });
     post.save().then(createdPost => {
@@ -69,31 +77,31 @@ router.post("", up.single('upload'), (req, res, next) => {
             message: 'Post added successfully',
             post: {
                 id: createdPost._id,
-                ...createdPost,
-                // Title: createdPost.Title,
-                // PostDescription: createdPost.PostDescription,
-                // PostLocation: createdPost.PostLocation,
-                // LocationEvent: createdPost.LocationEvent,
-                // Time: createdPost.Time,
-                // Date: createdPost.Date,
-                // Gender: createdPost.Gender,
-                // Driver: createdPost.Driver,
-                // PaymentService: createdPost.PaymentService,
-                // Virtual: createdPost.Virtual,
-                // Event: createdPost.Event,
-                // ImagePath: createdPost.ImagePath
-
+                ...createdPost
             } 
+        });
+    })
+    .catch(error => {
+        res.status(500).json({
+            message: 'Creating a post failed!'
         });
     });
 });
 
 // Posts deleting
-router.delete("/api/posts/:id", (req, res, next ) => {
-    Post.deleteOne({_id: req.params.id}).then(result => {
-        console.log(result);
+router.delete("/api/posts/:id", checkAuth, (req, res, next ) => {
+    Post.deleteOne({_id: req.params.id, Creator: reg.userData.userId}).then(result => {
+        if (result.n > 0){
         res.status(200).json({message: 'Post deleted!!'});
-    });   
+        } else {
+            res.status(401).json({message: 'Not authorized'});
+        }
+    })
+    .catch(error => {
+        res.status(500).json({
+            message: 'Fetching posts failed!'
+        });
+    });
 });
 
 

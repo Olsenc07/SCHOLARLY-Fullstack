@@ -2,8 +2,9 @@ import { Component, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { NavigationEnd, Router } from '@angular/router';
 import { faCoffee } from '@fortawesome/free-solid-svg-icons';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
+import { AuthService } from './services/auth.service';
 
 
 
@@ -14,7 +15,6 @@ import { filter, map, tap } from 'rxjs/operators';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-
   minHeight = true;
   minwidth = true;
   aspectRatio = true;
@@ -56,6 +56,7 @@ export class AppComponent implements OnInit {
 
   constructor(
               private router: Router,
+              private authService: AuthService
   ) {
     this.filteredSearch = this.search.valueChanges.pipe(
       map((user: string | null) => user ? this._filter(user) : this.allUsers.slice()));
@@ -67,6 +68,8 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.authService.autoAuthUser();
+
     document.getElementsByClassName('search-box__icon')[0]?.addEventListener('click', this.activateSearch);
     this.searchBox = document.getElementsByClassName('search-box')[0];
 
@@ -120,7 +123,9 @@ export class AppComponent implements OnInit {
 }
   }
 
-
+onLogout(): void{
+  this.authService.logout();
+}
 
   // Missing link to fix search icon movement i hope
   // searchIcon.addEventListener("click", activateSearch);

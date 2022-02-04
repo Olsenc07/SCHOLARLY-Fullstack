@@ -12,9 +12,14 @@
           <div class="centerT" *ngIf="post.Title">
 
             <mat-card-title class="postTitle textSizeTit">
-
               {{ post.Title}}
             </mat-card-title>
+
+            
+            <button *ngIf='userIsAuthenticated && userId === post.Creator' mat-icon-button
+            (click)='openDialog()'><span class="material-icons-two-tone">
+              delete_forever
+              </span></button>
 
           </div>
           <div class="row2">
@@ -143,7 +148,7 @@
 
       <!---- Takes upload img/video from post page {{Upload}} -->
       <!-- *ngFor="let show of showCases" -->
-      <div class="upload" *ngIf="post.Upload">
+      <div class="upload" *ngIf="post.ImagePath">
 
         <img class="middle-card" [src]="post.ImagePath">
       </div>
@@ -158,8 +163,6 @@
         </div>
 
       </div>
-
-
 
 
 

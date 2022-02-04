@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild} from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, OnDestroy} from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, Validators, Form, NgForm } from '@angular/forms';
 
 import {
@@ -18,9 +18,10 @@ import { MatAutocompleteSelectedEvent, MatAutocomplete } from '@angular/material
 import { MatChipInputEvent } from '@angular/material/chips';
 import { map } from 'rxjs/operators';
 import { SearchListService } from '../services/search.service';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { Post, PostService } from '../services/post.service';
 import { mimeType } from './mime-type.validator';
+import { AuthService } from '../services/auth.service';
 
 const moment = _moment;
 
@@ -56,14 +57,17 @@ interface SearchOption {
   ],
 })
 
-export class PostPageComponent implements OnInit {
+export class PostPageComponent implements OnInit, OnDestroy {
   minwidth = true;
   public selectedOption: string;
   public specificOptions: string[];
   public searchOptions: SearchOption[];
 
-  url: string;
+  isLoading = false;
+  private postId: string;
+  private authStatusSub: Subscription;
 
+  url: string;
   selectedIndex = 0;
 
   visible = true;
@@ -127,7 +131,8 @@ export class PostPageComponent implements OnInit {
 
 
   constructor(public dialog: MatDialog, public searchListService: SearchListService,
-              private fb: FormBuilder, private postService: PostService) {
+              private fb: FormBuilder, private postService: PostService,
+              private authService: AuthService) {
 
     // Desktop tag friends
     this.filteredFriends = this.friendCtrl.valueChanges.pipe(
@@ -148,7 +153,7 @@ export class PostPageComponent implements OnInit {
   }
 
 
-  onImagePicked(event: Event) {
+  onImagePicked(event: Event): any {
     const file = (event.target as HTMLInputElement).files[0];
     this.form.patchValue({upload: file});
     this.form.get('upload').updateValueAndValidity();
@@ -168,15 +173,17 @@ export class PostPageComponent implements OnInit {
     document.getElementById('upload2').removeAttribute('src');
   }
 
-  
   ngOnInit(): any {
+    this.authStatusSub = this.authService.getAuthStatusListener()
+    .subscribe( authStatus => {
+      this.isLoading = false;
+    });
     this.form = new FormGroup({
-      upload: new FormControl('', {
+      upload: new FormControl(null, {
         validators: [Validators.required],
         asyncValidators: [mimeType]
       })
     });
-
 
     this.searchOptions = this.searchListService.getSearchOptions();
     // Doesn't keep track of value
@@ -186,6 +193,12 @@ export class PostPageComponent implements OnInit {
       this.minwidth = false;
     }
   }
+
+
+  ngOnDestroy() {
+    this.authStatusSub.unsubscribe();
+  }
+
   onSearchSelection(value): void {
     console.log(value);
     this.specificOptions = this.searchListService.onSearchSelection(value);
@@ -234,7 +247,7 @@ export class PostPageComponent implements OnInit {
   }
 
 
-  onFormSubmit(form: NgForm) {
+  onFormSubmit(form: NgForm): any {
     if (this.form.get('upload').invalid){
       return;
     }
@@ -245,25 +258,25 @@ export class PostPageComponent implements OnInit {
 
 
 
-    const post: Post = {
-      Title: form.value.Title,
-      PostDescription: form.value.postDescription,
-      PostLocation: form.value.postLocation,
-      LocationEvent: form.value.locationEvent,
-      Time: form.value.time,
-      Date: form.value.date,
-      Gender: form.value.gender,
-      Driver: form.value.driver,
-      PaymentService: form.value.paymentService,
-      Virtual: form.value.virtual,
-      Event: form.value.Event,
-      id: this.id.value,
-      upload: this.form.get('upload').value,
-      FriendCtrl: this.friendCtrl.value,
+    // const post: Post = {
+    //   Title: form.value.Title,
+    //   PostDescription: form.value.postDescription,
+    //   PostLocation: form.value.postLocation,
+    //   LocationEvent: form.value.locationEvent,
+    //   Time: form.value.time,
+    //   Date: form.value.date,
+    //   Gender: form.value.gender,
+    //   Driver: form.value.driver,
+    //   PaymentService: form.value.paymentService,
+    //   Virtual: form.value.virtual,
+    //   Event: form.value.Event,
+    //   id: this.id.value,
+    //   upload: this.form.get('upload').value,
+    //   FriendCtrl: this.friendCtrl.value,
       // SecondFormGroup: this.secondFormGroup.value,
       // ThirdFormGroup: this.thirdFormGroup.value,
       // FourthFormGroup: this.fourthFormGroup.value,
-    };
+    // };
 
 
     this.postService.addPost(this.postLocation.value,
@@ -273,9 +286,9 @@ export class PostPageComponent implements OnInit {
       this.date.value,
       this.time.value,
       this.gender.value,
-       this.driver.value, this.paymentService.value,
-       this.virtual.value,
-        this.event.value);
+      this.driver.value, this.paymentService.value,
+      this.virtual.value,
+    this.event.value);
     form.resetForm();
   }
 
@@ -300,6 +313,8 @@ export class DialogElementsComponent { }
   styleUrls: ['./dialog-elements.component.scss'],
 })
 export class ServicesElementsComponent { }
+
+
 
 
 

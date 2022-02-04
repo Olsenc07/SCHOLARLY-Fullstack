@@ -10,7 +10,8 @@
  const path = require('path');
  const mongoose = require('mongoose');
 
- const postRoutes = require('./routes/posts')
+ const postRoutes = require('./routes/posts');
+ const userRoutes = require('./routes/user');
  
 
 /**
@@ -38,13 +39,13 @@ app.use('/posts', express.static(path.join('/Users/chaseolsen/angular_scholarly_
 
 app.use((req, res, next) => {
    res.setHeader( "Access-Control-Allow-Origin", "*");
-   res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type: 'multipart/form-data', Accept");
-   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, PUT, OPTIONS")
+   res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type: 'multipart/form-data', Accept, Authorization");
+   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, PUT, OPTIONS");
    next();
 });
 
-// Routes from routes/posts.js
-app.use("/api/posts", postRoutes)
+app.use("/api/user", userRoutes);
+app.use("/api/posts", postRoutes);
 
 /**
  * Routes Definitions
@@ -115,5 +116,5 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '/angular-SCHOLARLY/static/index.html'))
 })
 
-
+module.exports = app
 
