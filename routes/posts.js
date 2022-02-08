@@ -15,8 +15,6 @@ const MIME_TYPE_MAP ={
 
 
 
-
-
 const storage  = multer.diskStorage({
     destination: (req, file, cb) => {
         const isValid = MIME_TYPE_MAP[file.mimetype];
@@ -34,7 +32,7 @@ const storage  = multer.diskStorage({
     },
     
 });
-const up = multer({ storage: storage})
+
 // Post recieving
 router.get("", (req, res, next) => {
     Post.find().then(documents => {
@@ -50,6 +48,7 @@ router.get("", (req, res, next) => {
     });
 });
 
+const up = multer({ storage: storage})
 // Post additions
 router.post("", 
     checkAuth,

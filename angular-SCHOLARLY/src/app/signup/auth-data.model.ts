@@ -5,6 +5,9 @@ export interface AuthData {
 }
 
 export interface AuthDataInfo {
+    Creator: string;
+    username?: string;
+    id?: string;
     name?: string;
     gender?: string;
     birthday?: string;
@@ -13,4 +16,11 @@ export interface AuthDataInfo {
     sport?: string;
     club?: string;
     pronouns?: string;
+    CodeCompleted?: string;
+    CodePursuing?: string;
+    profilePic?: File;
+    ProfilePicPath?: string;
+    showCase?: File;
+    ShowCasePath?: string;
+
 }

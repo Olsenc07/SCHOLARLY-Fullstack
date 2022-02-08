@@ -2,17 +2,18 @@
   <mat-spinner ></mat-spinner>
 </div>
 
-<div class="main-content" *ngIf="!isLoading">
+<div *ngFor="let info of infos">
+<div class="main-content"  *ngIf="(userIsAuthenticated && (userId === info.Creator))">
   <!-- input pic & has this default pic before-->
   <div class="left-side">
 
-    <div class="profile-pic" *ngIf="(profile | async)?.profPic">
+    <div class="profile-pic" *ngIf="info.ProfilePicPath">
       <!-- need to get croppeded value -->
-      <img class="pic" src="{{(profile | async)?.profPic}}">
+      <img class="pic" src="{{info.ProfilePicPath}}">
       <!-- <img *ngFor="let id of ids" src="{{id.profilePic}}" class="pic" /> -->
     </div>
 
-    <div class="profile-pic" *ngIf="!(profile | async)?.profPic">
+    <div class="profile-pic" *ngIf="!info.ProfilePicPath">
       <img src="../../assets/Pics/WhiteSquareInAppLogo.jpg" class="pic" />
     </div>
 
@@ -24,9 +25,9 @@
 
           
 
-          <div class="centerR_">
+          <div class="centerR_" >
             <!-- This is hard coded once user signs up -->
-            {{(Id |async)?.UserName}}
+            {{info.username}}
 
           </div>
           <div>
@@ -42,14 +43,14 @@
 
 
         </div>
-        <div class="centerGD" *ngIf="(profile | async)?.Gender.name || (profile | async )?.Birthday  ">
-          <div *ngIf="(profile | async)?.Gender.name">
+        <div class="centerGD" *ngIf="info.gender || info.birthday  ">
+          <div *ngIf="info.gender">
             <!--  Male -->
-            {{ (profile | async)?.Gender.name}}
+            {{ info.gender}}
           </div>
-          <div *ngIf="(profile | async )?.Birthday">
+          <div *ngIf="info.birthday">
             <!-- Eventually just have the age calculated out...maybe -->
-            {{ (profile | async )?.Birthday|date:"longDate" }}
+            {{ info.birthday|date:"longDate" }}
           </div>
 
           <!-- <div *ngIf="date equals bd input"> <i class="material-icons icon">cake</i>
@@ -63,30 +64,30 @@
 
       <mat-divider class="margin"></mat-divider>
       <!-- Major/Minor -->
-      <div class="major-minor" *ngIf="(profile| async)?.Major || (profile| async)?.Minor ">
+      <div class="major-minor" *ngIf="info.major || info.minor ">
         <!-- *ngIf="major.value" -->
-        <div class="centerR" *ngIf="(profile| async)?.Major ">
+        <div class="centerR" *ngIf="info.major ">
           <!-- Major -->
-          <i class="fas fa-star large">{{ (profile | async)?.Major}}</i>
+          <i class="fas fa-star large">{{ info.major}}</i>
 
         </div>
-        <div class="centerR" *ngIf="(profile| async)?.Minor ">
+        <div class="centerR" *ngIf="info.minor ">
           <!-- Minor -->
-          <i class="far fa-star large">{{ (profile | async)?.Minor}}</i>
+          <i class="far fa-star large">{{ info.minor}}</i>
         </div>
 
       </div>
-      <mat-divider class="margin" *ngIf="(profile| async)?.Major  || (profile| async)?.Minor">
+      <mat-divider class="margin" *ngIf="info.major  || info.minor">
       </mat-divider>
       <!-- Sport/Club -->
-      <div class="major-minor" *ngIf="(profile| async)?.Sport  || (profile| async)?.Club">
-        <div class=" centerR" *ngIf="(profile| async)?.Sport ">
+      <div class="major-minor" *ngIf="info.sport  || info.club">
+        <div class=" centerR" *ngIf="info.sport ">
           <!-- Sport -->
-          {{ (profile | async)?.Sport}}
+          {{ info.sport}}
         </div>
-        <div class="centerR" *ngIf="(profile| async)?.Club ">
+        <div class="centerR" *ngIf="info.club ">
           <!-- Club -->
-          {{ (profile | async)?.Club}}
+          {{ info.club}}
         </div>
 
       </div>
@@ -112,13 +113,6 @@
 
 
 
-
-
-
-
-
-
-
 <!-- Middle -->
 <div class="middle hide">
   
@@ -134,11 +128,10 @@
         <div class="fName">
          
           <!-- Chase Olsen -->
-          {{ (profile | async)?.Pronouns}}
-          {{ (profile | async)?.Name}}
-          <mat-chip-list class="center_" aria-label="FollowBtn">
+          {{ info.pronouns}}
+          {{ info.name}}
+          <mat-chip-list *ngIf='userIsAuthenticated && !userId === info.Creator' class="center_" aria-label="FollowBtn">
             <mat-chip class="messageM" (click)="followClicked()">
-    
     
               {{ following ? "Unfollow" : "Follow" }}
     
@@ -151,11 +144,8 @@
       </div>
     </div>
 
-  
-
   </div>
 
-  <!-- DESKTOP -->
   <div class="hide">
     <div class="HighlightsM">
       <!-- Hightlight Input box -->
@@ -268,16 +258,16 @@
             </div>
           </mat-tab>
           <mat-tab label="Showcase">
-            <div class="column1" *ngIf="!(profile|async)?.ShowCase">
+            <div class="column1" *ngIf="!info.ShowCasePath">
               <div class="row"> No Showcases Added</div> <span class="fas fa-eye-slash  centerR iconEmpty"></span>
             </div>
 
-            <div class="showCase" *ngIf="(profile|async)?.ShowCase">
+            <div class="showCase" *ngIf="info.ShowCasePath">
 
 
               <div class="column">
 
-                <img class="img" src={{(profile|async)?.ShowCase}} />
+                <img class="img" src={{info.ShowCasePath}} />
                 <!-- *ngFor="let showCase of showCases {{ShowCase}} -->
 
               </div>
@@ -290,10 +280,14 @@
   </div>
 
 </div>
-
-
-
 </div>
+</div>
+
+
+
+
+
+
 
 
 

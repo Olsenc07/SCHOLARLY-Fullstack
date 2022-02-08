@@ -1,13 +1,42 @@
 const express = require('express');
+const multer = require('multer');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const checkAuth = require('/Users/chaseolsen/angular_scholarly_fs/backend/middleware/check-auth');
 const User = require('/Users/chaseolsen/angular_scholarly_fs/backend/models/user');
 const UserInfo = require('/Users/chaseolsen/angular_scholarly_fs/backend/models/userInfo');
 
+const MIME_TYPE_MAP ={
+    'image/png': 'png',
+    'image/jpeg': 'jpg',
+    'image/jpg': 'jpg',
+};
+
+const storage  = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const isValid = MIME_TYPE_MAP[file.mimetype];
+        let error = new Error('Invalid mime type');
+        if (isValid){
+            error = null;
+        }    
+        cb(null, './backend/profilePics');   
+  
+    },
+    filename: (req, file, cb) => {
+        const name = file.originalname.toLowerCase();
+        const ext = MIME_TYPE_MAP[file.mimetype];
+        cb(null, name + '-' + Date.now() + '.' + ext);
+    },
+    
+});
 
 
+
+
+
+// Creating user
 router.post("/signup", (req, res, next) => {
     bcrypt.hash(req.body.password, 10)
         .then(hash => {
@@ -24,15 +53,23 @@ router.post("/signup", (req, res, next) => {
             })
                 .catch(err => {
                     res.status(500).json({
-                            message: 'Email or Usernmae invalid'
+                            message: 'Email or Username invalid!'
                     });
                 });
         });
 });
 
+const pic = multer({ storage: storage});
 
-    router.post("/info", (req, res, next) => {
-            const userinfo = new UserInfo({
+
+// User info
+    router.post("/info", checkAuth,
+            pic.fields([{name: 'profilePic', maxCount: 1},
+                        {name: 'showCase'}
+        ]), (req, res, next) => {
+            const url = req.protocol + '://' + req.get('host');
+            const info = new UserInfo({
+                username: req.body.username,
                 name: req.body.name,
                 gender: req.body.gender,
                 birthday: req.body.birthday,
@@ -41,11 +78,21 @@ router.post("/signup", (req, res, next) => {
                 sport: req.body.sport,
                 club: req.body.club,
                 pronouns: req.body.pronouns,
+                CodePursuing: req.body.CodePursuing,
+                CodeCompleted: req.body.CodeCompleted,
+                ProfilePicPath: url + '/ProfilePic/' + req.files.filename,
+                ShowCasePath: url + '/ShowCase/' + req.files.filename,
+                Creator: req.userData.userId,
+
+
             });
-            userinfo.save().then(result => {
+            info.save().then(result => {
                 res.status(201).json({
                     message: 'Yay a user added info',
-                    result: result
+                    post: {
+                    id: result._id,
+                    ...result
+                    }
                 });
             })
                 .catch(err => {
@@ -55,7 +102,23 @@ router.post("/signup", (req, res, next) => {
                 });
 });
 
+// userInfo recieving
+router.get("/info", (req, res, next) => {
+    UserInfo.find().then(documents => {
+    res.status(200).json({
+        message: 'Infos fetched succesfully!',
+        infos: documents
+        });
+    })
+    .catch(error => {
+        res.status(500).json({
+            message: 'Fetching infos failed!'
+        });
+    });
+});
 
+
+// Login
 router.post("/login", (reg, res, next) => {
     let fetchedUser;
     User.findOne({ email: reg.body.email })

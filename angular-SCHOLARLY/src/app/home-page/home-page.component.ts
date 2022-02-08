@@ -43,12 +43,6 @@ export class HomePageComponent implements OnInit, OnDestroy {
   clearEmail(): void {
     this.email.setValue('');
   }
- failedLogin(): void {
-    this.snackBar.open('Failed to login. Please Try again', 'Will do!!');
-  }
-  successfullLogin(): void {
-    this.snackBar.open('Welcome to the community', 'Thanks!');
-  }
 
   onSubmit(): void {
     console.log(this.loginForm.value);
