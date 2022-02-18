@@ -4,8 +4,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { SearchListService } from '../services/search.service';
 import { Post, PostService } from '../services/post.service';
-import { StoreService, Profile } from '../services/store.service';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../services/auth.service';
+import { AuthDataInfo } from '../signup/auth-data.model';
+
+
 
 
 interface SearchOption {
@@ -18,7 +21,10 @@ interface SearchOption {
   styleUrls: ['./search.component.scss'],
 })
 export class SearchComponent implements OnInit {
+  userId: string;
   userIsAuthenticated = false;
+  private authListenerSubs: Subscription;
+
 
   storedPosts: Post[] = [];
   posts: Post[] = [];
@@ -26,9 +32,8 @@ export class SearchComponent implements OnInit {
 
   post: Post;
 
-  storeProfiles: Profile[] = [];
-  profiles: Profile[] = [];
-  private profilesSub: Subscription;
+  infos: AuthDataInfo[] = [];
+  private infosSub: Subscription;
 
   isLoading = false;
 
@@ -62,7 +67,7 @@ export class SearchComponent implements OnInit {
     private router: Router,
     public route: ActivatedRoute,
     public postService: PostService,
-    public storeService: StoreService,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
@@ -74,11 +79,21 @@ export class SearchComponent implements OnInit {
       this.posts = posts;
       this.isLoading = false;
     });
-        this.storeService.getProfiles();
-        this.profilesSub = this.storeService.getProfileUpdateListener()
-         .subscribe((profiles: Profile[]) => {
-             this.profiles = profiles;
-         });
+        this.userId = this.authService.getUserId();
+        this.userIsAuthenticated = this.authService.getIsAuth();
+        this.authListenerSubs = this.authService
+            .getAuthStatusListener()
+            .subscribe(isAuthenticated => {
+              this.userIsAuthenticated = isAuthenticated;
+              this.userId = this.authService.getUserId();
+              console.log(this.userId);
+            });
+                //    Info
+        this.authService.getInfo();
+        this.infosSub = this.authService.getInfoUpdateListener()
+     .subscribe((infos: AuthDataInfo[]) => {
+     this.infos = infos;
+   });
   }
 
 

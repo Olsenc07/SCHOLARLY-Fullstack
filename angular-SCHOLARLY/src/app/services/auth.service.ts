@@ -42,9 +42,9 @@ private infosUpdated = new ReplaySubject<AuthDataInfo[]>();
 
     // User and their info
     createUser(email: string, username: string, password: string): any {
+        this.snackBar.open('Check your email to verify your account', 'Will do!!');
         const authData: AuthData = { email, username,  password};
         this.http.post('http://localhost:3000/api/user/signup', authData).subscribe(() => {
-            this.snackBar.open('Account is made, time to personalize it!', 'Yay!!');
          }, error => {
              this.authStatusListener.next(false);
          });
@@ -97,7 +97,6 @@ private infosUpdated = new ReplaySubject<AuthDataInfo[]>();
             this.infos.push(post);
             this.infosUpdated.next([...this.infos]);
             // this.snackBar.open('Sign in with your new account', 'Will do!!');
-            this.router.navigate['/search']
     }, error => {
         this.authStatusListener.next(false);
         });
@@ -147,7 +146,7 @@ private infosUpdated = new ReplaySubject<AuthDataInfo[]>();
                 this.token = token;
                 if (token) {
                 this.router.navigate(['/search']);
-                this.snackBar.open('Welcome to the community', 'Thanks!!');
+                this.snackBar.open('Welcome fellow scholar', 'Thanks!!');
                 const expiresInDuration = response.expiresIn;
                 this.setAuthTimer(expiresInDuration);
                 this.isAuthenticated = true;
@@ -250,5 +249,33 @@ loginFirst(email: string, password: string): any  {
                     userId
                 };
             }
+
+// Reset Password
+resetPassword(email: string): any {
+    this.snackBar.open('Check your email to reset your password', 'Will do!!');
+    const authData: AuthData = { email };
+    this.http.post('http://localhost:3000/api/user/forgot', authData).subscribe(() => {
+    }, error => {
+        this.authStatusListener.next(false);
+    });
+
+}
+
+// Update Password
+updatePassword(password: string, secretCode: string): any {
+    this.router.navigate(['/login']);
+    const authData: AuthData = { password, secretCode };
+    this.http.post('http://localhost:3000/api/user/reset-password', authData)
+    .subscribe(() => {
+        this.snackBar.open('Password has been changed', 'Thanks!!');
+    }, error => {
+        this.authStatusListener.next(false);
+    });
+
+
+}
+
+
+
 
 }

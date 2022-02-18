@@ -3,10 +3,27 @@ const multer = require('multer');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 const checkAuth = require('/Users/chaseolsen/angular_scholarly_fs/backend/middleware/check-auth');
 const User = require('/Users/chaseolsen/angular_scholarly_fs/backend/models/user');
 const UserInfo = require('/Users/chaseolsen/angular_scholarly_fs/backend/models/userInfo');
+
+
+// mail sender details
+var transporter = nodemailer.createTransport({
+    service: 'outlook365',
+    auth: {
+        // gmail just change to gmail email and service to gmail
+        user: 'skalarly777@outlook.com',
+        pass: 'Hockey07'
+    },
+    tls: {
+        rejectUnauthorized: false,
+     },
+  
+})
+
 
 const MIME_TYPE_MAP ={
     'image/png': 'png',
@@ -37,32 +54,186 @@ const storage  = multer.diskStorage({
 
 
 // Creating user
-router.post("/signup", (req, res, next) => {
+router.post("/signup", async(req, res, next) => {
     bcrypt.hash(req.body.password, 10)
         .then(hash => {
             const user = new User({
                 email: req.body.email,
+                emailToken: crypto.randomBytes(64).toString('hex'),
+                isVerified: false,
                 username: req.body.username,
                 password: hash,
             });
-            user.save().then(result => {
+             user.save().then(result => {
                 res.status(201).json({
                     message: 'Yay a new User!!',
                     result: result
                 });
             })
                 .catch(err => {
-                    res.status(500).json({
-                            message: 'Email or Username invalid!'
-                    });
+                    // res.status(500).json({
+                    //         message: 'Email or Username invalid!'     
+                    // });
+                    res.redirect('/sign-up')
+                    
                 });
+            const msg = {
+                from:' "Verify account" <skalarly777@outlook.com>',
+                to: user.email,
+                subject: 'Skalarly - verify account',
+                text: `We are excited to welcome you ${user.username} to the community!
+                Please copy and paste the link below to verify your account.
+                http://${req.headers.host}/api/user/verify-email?token=${user.emailToken}
+                `,
+                html: `
+                <h2>We are excited to welcome you ${user.username} to the community!</h2>
+                <div> Please click the link below to verify your account. </div>
+                <a href="http://${req.headers.host}/api/user/verify-email?token=${user.emailToken}">Verify account</a>
+                <div>If you have recieved this email by erorr, please disregard. </div>
+                `
+            }
+            // Sending mail
+            transporter.sendMail(msg, (error, info) => {
+                if (error){
+                    console.log(error)
+                }
+                else {
+                    
+                    console.log('Verification has been sent to email')
+                }
+                
+            })
+
         });
+       
 });
 
-const pic = multer({ storage: storage});
+router.get('/verify-email', async(req, res, next) => {
+    try {
+        const token = req.query.token;
+        const user =  await User.findOne({ emailToken: token});
+        if (user) {
+            user.emailToken = null;
+            user.isVerified = true;
+            await user.save();
+            res.redirect('/verified')
+        }else{
+            res.redirect('/sign-up')
+            console.log('error', 'Invalid authentication. Please try again.' );
+
+        }
+       
+    }finally {
+
+    }
+})
+
+const verifyEmail = async(req, res, next) => {
+    try{
+        const user = await User.findOne({ email: req.body.email})
+        if(user.isVerified){
+            next()
+        }
+        else{
+            console.log('Please check email to verify your account.')
+        }
+    }
+    catch(err){
+        console.log(err)
+    }
+}
+// Reset password
+router.post('/forgot', async(req, res) => {
+   const user = await User.findOne( {users: req.body.email});
+    console.log(user)
+
+//    Check users existence
+   if ( !user) {
+      res.status(500).json({
+          message: 'This email does not exist, or is not verified.'
+      })
+    }
+    const msg = {
+        from:' "Reset Password" <skalarly777@outlook.com>',
+        to: user.email,
+        subject: 'Skalarly - reset password',
+        text: `Hello ${user.username} we hear you forgot your password.
+        Here is your reset code ${user.password} then copy and paste the link below to navigate back
+        http://${req.headers.host}/api/user/reset-password?token=${user.password}
+        If you have recieved this email by erorr, please disregard.
+        `,
+        html: `
+        <h2>Hello ${user.username} we hear you forgot your password.</h2>
+        <div> Here is your reset code. Copy this!! </div>
+        ${user.password}
+        <div> Now follow the below link </div>
+       <a href="http://${req.headers.host}/api/user/reset-password?token=${user.password}">Follow link</a>
+        <div>If you have recieved this email by erorr, please disregard. </div>
+        `
+    }
+        // Sending mail
+        transporter.sendMail(msg, (error, info) => {
+            if (error){
+                console.log(error)
+            }
+            else {
+                
+                console.log('Password reset has been sent to email')
+            }
+            
+        })
+    
+
+})
+
+router.get('/reset-password', async(req, res, next) => {
+ try{
+    const token = req.query.token;
+    const user = await User.findOne( {password: token});
+   console.log(user)
+
+// Check if id exists in database
+if (user){
+    res.redirect('/resetPassword')
+}
+
+
+}finally {
+
+}
+})
+
+router.post('/reset-password', async(req, res, next) => {
+    try{
+    const user = await User.findOne( {users: req.body.email});
+    const secretCode = await User.findOne({secret: req.body.secretCode} )
+    if (secretCode === user.password ){
+        bcrypt.hash(req.body.password, 10)
+            .then(hash => {
+                user.updateOne({password: hash});
+                user.save().then(result => {
+                    res.status(201).json({
+                        message: 'Password changed successfully',
+                        result: result
+                    });
+            })
+            console.log(user.password)
+        })
+        res.redirect('/sign-up')
+        }
+    }finally{
+        console.log('Complete')
+    }
+})
+
+
+
+  
+
 
 
 // User info
+const pic = multer({ storage: storage});
     router.post("/info", checkAuth,
             pic.fields([{name: 'profilePic', maxCount: 1},
                         {name: 'showCase'}
@@ -82,6 +253,8 @@ const pic = multer({ storage: storage});
                 CodeCompleted: req.body.CodeCompleted,
                 ProfilePicPath: url + '/ProfilePic/' + req.files.filename,
                 ShowCasePath: url + '/ShowCase/' + req.files.filename,
+                followers: null,
+                following: null,
                 Creator: req.userData.userId,
 
 
@@ -119,7 +292,7 @@ router.get("/info", (req, res, next) => {
 
 
 // Login
-router.post("/login", (reg, res, next) => {
+router.post("/login", verifyEmail, (reg, res, next) => {
     let fetchedUser;
     User.findOne({ email: reg.body.email })
         .then(user => {
@@ -150,7 +323,8 @@ router.post("/login", (reg, res, next) => {
         })
         .catch(err => {
             return res.status(401).json({
-                message: "Invalid authentication credentials!"
+                message: "Invalid authentication credentials!",
+
             });
         });
 });

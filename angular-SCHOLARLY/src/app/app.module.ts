@@ -50,13 +50,13 @@ import { environment } from 'src/environments/environment';
 import { routingComponents } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SearchComponent } from './search/search.component';
-import { RetrievePasswordComponent } from './retrieve-password/retrieve-password.component';
+import { RetrievePasswordComponent, ResetPasswordComponent } from './retrieve-password/retrieve-password.component';
 import { ProfileComponent } from './profile/profile.component';
 import { EditProfileComponent } from './edit-profile/edit-profile.component';
 import { GroupChatsComponent } from './group-chats/group-chats.component';
 import { MessagingComponent } from './messaging/messaging.component';
 import { MainPagesComponent } from './main-pages/main-pages.component';
-import { SignupComponent } from './signup/signup.component';
+import { SignupComponent, VerifiedPopUpComponent } from './signup/signup.component';
 import { TermsPopUpComponent } from './signup/signup.component';
 import { AccountTextComponent } from './signup/signup.component';
 import { LoginPopUpComponent } from './signup/signup.component';
@@ -132,6 +132,8 @@ import { ErrorInterceptor } from './error-interceptor';
     DeleteWarningComponent,
     ErrorComponent,
     LoginPopUpComponent,
+    VerifiedPopUpComponent,
+    ResetPasswordComponent
   ],
   imports: [
     BrowserModule,
