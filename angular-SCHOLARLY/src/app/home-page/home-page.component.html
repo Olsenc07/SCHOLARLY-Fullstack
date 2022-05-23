@@ -9,9 +9,10 @@
         </span>
         <!-- Container holding the log in form -->
         <div class="log-in-box" fxLayout="column" fxLayoutAlign="center center">
+         
           <mat-form-field class="text-input">
             <mat-label> Academic Email</mat-label>
-            <input matInput type="email" [formControl]="email" required/>
+            <input matInput  [formControl]="email" required/>
             <span matSuffix class="hide"></span>
             <mat-error *ngIf="email.invalid">Please enter your academic email</mat-error>
             <!-- <button color="primary" mat-button matSuffix mat-icon-button aria-label="Clear" type="button"
@@ -19,20 +20,45 @@
               <mat-icon>close</mat-icon>
             </button> -->
           </mat-form-field>
+        
+   
+
+
+          <div class="row_">
           <mat-form-field class="text-input">
             <mat-label>Password</mat-label>
-            <input matInput [formControl]="password" type="password" required/>
+            <input matInput [formControl]="password" type="password" id='passwordType' required/>
             <mat-error *ngIf="password.invalid">Please enter a valid password</mat-error>
-            <!-- <button color="primary" mat-button matSuffix mat-icon-button aria-label="Clear" type="button"
-              (click)="clearPassword()">
-              <mat-icon>close</mat-icon>
-            </button> -->
+   
           </mat-form-field>
+           
+            <button mat-icon-button type="button" (click)="toggleVisibilty()" >
+              <mat-icon class="material-symbols-sharp" *ngIf="!visible">visibility</mat-icon>
+              <mat-icon class="material-symbols-sharp" *ngIf="visible">visibility_off</mat-icon>
+              </button>
+            
+        </div>
+
+          <!-- <div class="loginBtn"> -->
+         
+
           <button type="submit" mat-raised-button [disabled]="!email.valid || !password.valid"
             color="primary" class="action-button top" *ngIf="!isLoading" routerLink="/search" >
             Log In
           </button>
-          <mat-spinner *ngIf="isLoading"></mat-spinner>
+
+          <!-- <mat-spinner  *ngIf="isLoading"></mat-spinner> -->
+
+          <div  *ngIf="isLoading"  class="action-button top">
+
+                
+                  <div class="dot-pulse"></div>
+          
+          </div>
+        <!-- </div> -->
+
+
+
           <button type="button" mat-button disableRipple class="forgot-password" routerLink="/retrieve-password">
             Forgot Password?
           </button>

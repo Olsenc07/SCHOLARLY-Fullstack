@@ -8,6 +8,8 @@ const nodemailer = require('nodemailer');
 const checkAuth = require('/Users/chaseolsen/angular_scholarly_fs/backend/middleware/check-auth');
 const User = require('/Users/chaseolsen/angular_scholarly_fs/backend/models/user');
 const UserInfo = require('/Users/chaseolsen/angular_scholarly_fs/backend/models/userInfo');
+const user = require('/Users/chaseolsen/angular_scholarly_fs/backend/models/user');
+
 
 
 // mail sender details
@@ -158,7 +160,7 @@ const verifyEmail = async(req, res, next) => {
 // Reset password
 router.post('/forgot', async(req, res) => {
     try {
-   const user = await User.findOne( {email: req.body.email});
+   const user = await User.findOne({email: req.body.email});
 //    Check users existence
    if ( !user) {
       res.status(500).json({
@@ -287,7 +289,9 @@ const pic = multer({ storage: storage});
 
 // userInfo recieving
 router.get("/info", (req, res, next) => {
-    UserInfo.find().then(documents => {
+    UserInfo.find()
+    // .select('-password') if i was fetching user info, dont want password passed on front end
+    .then(documents => {
     res.status(200).json({
         message: 'Infos fetched succesfully!',
         infos: documents
@@ -299,6 +303,63 @@ router.get("/info", (req, res, next) => {
         });
     });
 });
+
+
+
+// userInfo for going to others profile pages
+router.post("/otherInfo/:username", async(req, res, next) => {
+    const userName = await UserInfo.findOne({userName: req.params.username});
+    // const user = User.find({userName});
+    // const userName = UserInfo.find({username: req.body.username});
+    // const ID = id._id
+    console.log('hey this is post route', );
+    // console.log('howdy', userName);
+    // console.log('britt', idHey);
+
+
+
+    // console.log(ID, 'wally')
+    // console.log('http://localhost:3000/api/user/onOtherProfile/' + user)
+    // console.log('http://localhost:3000/api/user/onOtherProfile/' + idHey)
+
+// res.redirect('http://localhost:3000/api/user/onOtherProfile/' + req.body.id)
+   
+});
+
+// Redirected from the postinfo page load
+// router.get("/otherInfo/:id", async(req, res, next) => {
+//     UserInfo.find()
+//     // .select('-password') if i was fetching user info, dont want password passed on front end
+//     .then(documents => {
+//     res.status(200).json({
+//         message: 'Infos fetched succesfully!',
+//         infos: documents
+//         });
+//     })
+//     .catch(error => {
+//         res.status(500).json({
+//             message: 'Fetching infos failed!'
+//         });
+//     });
+
+// const id = req.params.id;
+//     const Id = req.params.id;
+//         console.log(Id, 'donkey');
+//         // window.location.href = 'profile/:id';
+
+// })
+
+// Get user
+router.get("/profiles/:id", async (req, res, next) => {
+    try{
+        const user = await User.findById(req.params.id);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+
+
+
+    })
 
 
 // Login

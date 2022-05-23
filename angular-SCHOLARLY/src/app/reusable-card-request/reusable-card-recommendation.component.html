@@ -17,11 +17,14 @@
                 </div>
 
                 <div class="column_">
-                <div class="userName textSize" >
+                <!-- (click)="onOtherUser(info)" -->
+                <button mat-button type="button" 
+                class="userName textSize" [value]="info.username" (click)="navigateToPage(info.username)">
                     <!-- {{ (profile | async)?.Pronouns}} -->
-                    {{ info.username}}
+                    
+                    @{{ info.username}}
 
-                </div>
+                </button>
                 <div class="gender textSize" *ngIf="info.name">
                         {{info.name}}
                 </div>

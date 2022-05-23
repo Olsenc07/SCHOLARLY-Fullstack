@@ -6,11 +6,17 @@ import { map } from 'rxjs/operators';
 import {Router} from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AppRoutingModule } from '../app-routing.module';
+import { faInfo } from '@fortawesome/free-solid-svg-icons';
 
 
 
 @Injectable({ providedIn: 'root'})
 export class AuthService {
+
+
+
+
+    constructor(private http: HttpClient, private router: Router, private snackBar: MatSnackBar) {}
 private isAuthenticated = false;
 private token: string;
 private tokenTimer: any;
@@ -19,11 +25,6 @@ private authStatusListener = new Subject<boolean>();
 
 private infos: AuthDataInfo[] = [];
 private infosUpdated = new ReplaySubject<AuthDataInfo[]>();
-
-
-
-
-    constructor(private http: HttpClient, private router: Router, private snackBar: MatSnackBar) {}
 
     getToken(): string  {
         return this.token;
@@ -47,7 +48,9 @@ private infosUpdated = new ReplaySubject<AuthDataInfo[]>();
         this.snackBar.open('Check your email to verify your account', 'Will do!!');
          }, error => {
              this.authStatusListener.next(false);
-             const snackBarRef = this.snackBar.open('Email or Username is already taken -->', 'Retry!!');
+             const snackBarRef = this.snackBar.open('Email or Username is already taken', 'Retry!!', {
+                 duration: 3000
+             });
              snackBarRef.afterDismissed().subscribe(() => {
             window.location.reload();
             });
@@ -75,7 +78,6 @@ private infosUpdated = new ReplaySubject<AuthDataInfo[]>();
         userData.append('CodePursuing', CodePursuing);
         userData.append('profilePic', profilePic);
         userData.append('showCase', showCase);
-
 
 
         this.http
@@ -110,7 +112,7 @@ private infosUpdated = new ReplaySubject<AuthDataInfo[]>();
         return this.infosUpdated.asObservable();
     }
     getInfo(): any {
-        this.http.get<{message: string, infos: any}>('http://localhost:3000/api/user/info')
+        this.http.get<{message: string, infos: any}>('http://localhost:3000/api/user/info' )
             .pipe(map((infosData) => {
                 return infosData.infos.map ( info => {
                     return {
@@ -129,8 +131,6 @@ private infosUpdated = new ReplaySubject<AuthDataInfo[]>();
                         ProfilePicPath: info.ProfilePicPath,
                         ShowCasePath: info.ShowCasePath,
                         Creator: info.Creator,
-
-
                     };
                 });
             }))
@@ -140,6 +140,78 @@ private infosUpdated = new ReplaySubject<AuthDataInfo[]>();
 
                 });
             }
+
+            // Attempt at naviagting to user profile
+
+            // OtherUser(Info): any {
+            //    const id = Info;
+            //    const authDataInfo: AuthDataInfo = { id };
+            //    this.http.post<{message: string, infos: any}>('http://localhost:3000/api/user/otherInfo', authDataInfo )
+            //     .subscribe(data => {
+            //     }, error => {
+            //             this.authStatusListener.next(false);
+            //             });
+            // }
+
+
+            // Attempt at naviagting to user profile
+            // otherProfiles(info: string): any {
+            //    const username = info;
+            //    console.log('tities', username);
+
+            //    const authDataInfo: AuthDataInfo = { username };
+            //    this.http.post<{message: string, infos: any}>('http://localhost:3000/api/user/otherInfo', authDataInfo )
+            //    .subscribe(data => {
+            //     }, error => {
+            //             this.authStatusListener.next(false);
+            //             });
+            // }
+
+            otherProfiles(value: string): any {
+                const username = value;
+                console.log('tities', username);
+ 
+                const authDataInfo: AuthDataInfo = { username };
+                this.http.post<{message: string, infos: any}>('http://localhost:3000/api/user/otherInfo/' + username, authDataInfo )
+                .subscribe(data => {
+                 }, error => {
+                         this.authStatusListener.next(false);
+                         });
+                console.log('http://localhost:3000/api/user/otherInfo/' + username);
+
+             }
+
+
+            getOtherInfo(): any {
+                this.http.get<{message: string, infos: any}>('http://localhost:3000/api/user/profiles' )
+                    .pipe(map((infosData) => {
+                        return infosData.infos.map ( info => {
+                            return {
+                                id: info._id,
+                                username: info.username,
+                                name: info.name,
+                                gender: info.gender,
+                                birthday: info.birthday,
+                                major: info.major,
+                                minor: info.minor,
+                                sport: info.sport,
+                                club: info.club,
+                                pronouns: info.pronouns,
+                                CodeCompleted: info.CodeCompleted,
+                                CodePursuing: info.CodePursuing,
+                                ProfilePicPath: info.ProfilePicPath,
+                                ShowCasePath: info.ShowCasePath,
+                                Creator: info.Creator,
+                            };
+                        });
+                    }))
+                        .subscribe((transformedInfos) => {
+                            // this.infos = transformedInfos;
+                            this.infosUpdated.next([...this.infos]);
+                        });
+                    }
+
+
 
 
 // Login
@@ -151,7 +223,9 @@ private infosUpdated = new ReplaySubject<AuthDataInfo[]>();
                 this.token = token;
                 if (token) {
                 this.router.navigate(['/search']);
-                this.snackBar.open('Welcome fellow scholar', 'Thanks!!');
+                this.snackBar.open('Welcome Fellow Scholar!', 'Thanks', {
+                    duration: 3000
+                });
                 const expiresInDuration = response.expiresIn;
                 this.setAuthTimer(expiresInDuration);
                 this.isAuthenticated = true;
@@ -165,7 +239,9 @@ private infosUpdated = new ReplaySubject<AuthDataInfo[]>();
                 }
                 }, error => {
                     this.authStatusListener.next(false);
-                    this.snackBar.open('Failed to login. Please Try again', 'Will do!!');
+                    this.snackBar.open('Failed to login. Please Try again', 'Will do!!', {
+                        duration: 4000
+                    });
                  });
             }
 
@@ -178,7 +254,9 @@ loginFirst(email: string, password: string): any  {
             this.token = token;
             if (token) {
             // this.router.navigate(['/search']);
-            this.snackBar.open('Welcome to the community', 'Thanks!!');
+            this.snackBar.open('Welcome to the community', 'Thanks!!', {
+                duration: 3000
+            });
             const expiresInDuration = response.expiresIn;
             this.setAuthTimer(expiresInDuration);
             this.isAuthenticated = true;
@@ -192,8 +270,11 @@ loginFirst(email: string, password: string): any  {
             }
             }, error => {
                 this.authStatusListener.next(false);
-                this.snackBar.open('Failed to login. Please Try again', 'Will do!!');
+                this.snackBar.open('Failed to login. Please Try again', 'Will do!!'
+                , {
+                    duration: 4000
              });
+        });
         }
 
         autoAuthUser(): any {
@@ -271,12 +352,16 @@ updatePassword(password: string, secretCode: string): any {
     const authData: AuthData = { password, secretCode };
     this.http.post('http://localhost:3000/api/user/reset-password', authData)
     .subscribe(() => {
-        const snackBarRef = this.snackBar.open('Password has been changed', 'Login!!');
+        const snackBarRef = this.snackBar.open('Password has been changed', 'Login!!', {
+            duration: 2000
+        });
         snackBarRef.afterDismissed().subscribe(() => {
         this.router.navigate(['/login']);
        });
     }, error => {
-        this.snackBar.open('Invalid reset code', 'Check your email');
+        this.snackBar.open('Invalid reset code', 'Check your email', {
+            duration: 3000
+        });
         this.authStatusListener.next(false);
     });
 
